@@ -197,6 +197,23 @@ font-weight:bold;
 .botao:hover{
 background:#163a7a;
 }
+
+/* Notificação */
+#notificacao{
+position:fixed;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+background:#1e4fa3;
+color:white;
+padding:15px 25px;
+border-radius:8px;
+box-shadow:0 6px 20px rgba(0,0,0,0.2);
+display:none;
+font-weight:bold;
+z-index:2000;
+font-family:Calibri;
+}
 </style>
 
 </head>
@@ -220,7 +237,7 @@ background:#163a7a;
 <div id="painel">
 
 <div class="header">
-<img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" alt="Logo">
+<img src="https://i.ibb.co/qYL7gVx8/NOMEIMAGEM.png" alt="Logo">
 <div class="headerTitulo">Painel de Atendimentos RH</div>
 <div class="userInfo">
 USUÁRIO: <b id="usuarioLogado"></b>
@@ -267,6 +284,8 @@ USUÁRIO: <b id="usuarioLogado"></b>
 </div>
 </div>
 </div>
+
+<div id="notificacao"></div>
 
 <script>
 const URL_USUARIOS="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/USUARIOS";
@@ -345,8 +364,20 @@ function buscarFuncionario(){
     }
 }
 
+/* NOTIFICAÇÃO */
+function notificar(msg, sucesso=true){
+    const box=document.getElementById("notificacao");
+    box.innerText=msg;
+    box.style.background=sucesso?"#1e4fa3":"#d9534f";
+    box.style.display="block";
+    setTimeout(()=>{box.style.display="none";},2500);
+}
+
 /* REGISTRAR ATENDIMENTO */
+let registrando=false;
 async function registrar(){
+    if(registrando) return; // bloqueio múltiplo
+    registrando=true;
     const btn=document.getElementById("registrarBtn");
     btn.disabled=true;
     let mat=document.getElementById("matricula").value;
@@ -357,8 +388,9 @@ async function registrar(){
     let desc=document.getElementById("descricao").value;
 
     if(mat=="" || desc=="" || tipo=="" || status==""){
-        alert("Preencha todos os campos obrigatórios");
+        notificar("Preencha todos os campos obrigatórios", false);
         btn.disabled=false;
+        registrando=false;
         return;
     }
 
@@ -383,7 +415,7 @@ async function registrar(){
         body:JSON.stringify(dados)
     });
 
-    alert("Atendimento registrado com sucesso!");
+    notificar("Atendimento registrado com sucesso!");
 
     document.getElementById("matricula").value="";
     document.getElementById("nome").value="";
@@ -393,6 +425,7 @@ async function registrar(){
     document.getElementById("descricao").value="";
 
     btn.disabled=false;
+    registrando=false;
 }
 </script>
 
