@@ -201,6 +201,13 @@ Analista: <b id="usuarioLogado"></b>
 <option>FÉRIAS</option>
 </select>
 
+<label>Status</label>
+
+<select id="status">
+<option>PENDENTE</option>
+<option>RESOLVIDO</option>
+</select>
+
 <label>Descrição *</label> <input id="descricao">
 
 <button class="botao" onclick="registrar()">Registrar Atendimento</button>
@@ -322,6 +329,7 @@ let mat=document.getElementById("matricula").value;
 let nome=document.getElementById("nome").value;
 let cargo=document.getElementById("cargo").value;
 let tipo=document.getElementById("tipo").value;
+let status=document.getElementById("status").value;
 let desc=document.getElementById("descricao").value;
 
 if(mat=="" || desc==""){
@@ -339,6 +347,7 @@ matricula:mat,
 nome:nome,
 cargo:cargo,
 tipo:tipo,
+status:status,
 descricao:desc,
 analista:usuarioAtual,
 data:data,
@@ -352,13 +361,12 @@ body:JSON.stringify(dados)
 
 alert("Atendimento registrado com sucesso!");
 
-/* limpar formulario */
-
 document.getElementById("matricula").value="";
 document.getElementById("nome").value="";
 document.getElementById("cargo").value="";
 document.getElementById("descricao").value="";
 document.getElementById("tipo").selectedIndex=0;
+document.getElementById("status").selectedIndex=0;
 
 }
 
