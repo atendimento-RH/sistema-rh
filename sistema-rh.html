@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Sistema de Atendimentos RH</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Calibri, Arial;
+background:#f2f6fc;
+}
+
+/* LOGIN */
+
+#loginContainer{
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.loginBox{
+background:white;
+padding:50px;
+border-radius:10px;
+box-shadow:0 10px 25px rgba(0,0,0,0.15);
+width:340px;
+text-align:center;
+}
+
+.loginBox h2{
+margin-top:0;
+color:#1e4fa3;
+}
+
+.loginBox input{
+width:100%;
+padding:12px;
+margin-top:12px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+.loginBtn{
+width:100%;
+margin-top:20px;
+padding:12px;
+background:#1e4fa3;
+border:none;
+color:white;
+border-radius:6px;
+font-size:15px;
+cursor:pointer;
+}
+
+#erro{
+color:red;
+margin-top:10px;
+}
+
+/* TOPO */
+
+.topbar{
+background:#1e4fa3;
+color:white;
+height:70px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 40px;
+}
+
+.topbar h2{
+margin:0;
+}
+
+.logout{
+background:white;
+color:#1e4fa3;
+border:none;
+padding:8px 14px;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* PAINEL */
+
+#painel{
+display:none;
+}
+
+.container{
+max-width:1100px;
+margin:40px auto;
+padding:0 20px;
+}
+
+.card{
+background:white;
+padding:35px;
+border-radius:10px;
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+}
+
+.card h3{
+margin-top:0;
+color:#1e4fa3;
+}
+
+/* FORM */
+
+label{
+display:block;
+margin-top:15px;
+font-size:14px;
+}
+
+input,select{
+width:100%;
+padding:10px;
+border:1px solid #ccc;
+border-radius:6px;
+margin-top:5px;
+font-family:Calibri;
+}
+
+.botao{
+margin-top:25px;
+padding:12px;
+background:#1e4fa3;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+width:100%;
+font-size:15px;
+}
+
+.botao:hover{
+background:#163b7a;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginContainer">
+
+<div class="loginBox">
+
+<h2>Sistema RH</h2>
+
+<input id="usuario" placeholder="Usuário">
+<input id="senha" type="password" placeholder="Senha">
+
+<button class="loginBtn" onclick="login()">Entrar</button>
+
+<div id="erro"></div>
+
+</div>
+
+</div>
+
+<!-- PAINEL -->
+
+<div id="painel">
+
+<div class="topbar">
+
+<h2>Gestão de Atendimentos RH</h2>
+
+<div>
+Analista: <b id="usuarioLogado"></b>
+<button class="logout" onclick="logout()">Sair</button>
+</div>
+
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<h3>Registrar Atendimento</h3>
+
+<label>Matrícula *</label> <input id="matricula" oninput="buscarFuncionario()">
+
+<label>Nome</label> <input id="nome" readonly>
+
+<label>Cargo</label> <input id="cargo" readonly>
+
+<label>Tipo de Atendimento</label>
+
+<select id="tipo">
+<option>Acerto Salarial</option>
+<option>Cadastro</option>
+<option>Atestado</option>
+<option>Benefícios</option>
+<option>Desligamento</option>
+<option>Ponto</option>
+<option>Férias</option>
+</select>
+
+<label>Descrição *</label> <input id="descricao">
+
+<button class="botao" onclick="registrar()">Registrar Atendimento</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* LINKS */
+
+const URL_USUARIOS="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/USUARIOS";
+const URL_BASE="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/BASE";
+
+const API_REGISTRO="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec";
+
+let usuarios=[];
+let funcionarios=[];
+let usuarioAtual="";
+
+/* carregar dados */
+
+async function carregar(){
+
+usuarios = await fetch(URL_USUARIOS).then(r=>r.json());
+funcionarios = await fetch(URL_BASE).then(r=>r.json());
+
+}
+
+carregar();
+
+/* LOGIN */
+
+function login(){
+
+let u=document.getElementById("usuario").value.trim();
+let s=document.getElementById("senha").value.trim();
+
+let ok=usuarios.find(x=>
+String(x.USUARIO).trim()===u &&
+String(x.SENHA).trim()===s
+);
+
+if(ok){
+
+usuarioAtual=ok.NOME;
+
+document.getElementById("loginContainer").style.display="none";
+document.getElementById("painel").style.display="block";
+
+document.getElementById("usuarioLogado").innerText=usuarioAtual;
+
+}else{
+
+document.getElementById("erro").innerText="Usuário ou senha inválidos";
+
+}
+
+}
+
+/* LOGOUT */
+
+function logout(){
+location.reload();
+}
+
+/* BUSCAR FUNCIONARIO */
+
+function buscarFuncionario(){
+
+let mat=document.getElementById("matricula").value;
+
+let f=funcionarios.find(x=>String(x.MATRICULA).trim()===mat);
+
+if(f){
+
+document.getElementById("nome").value=f.NOME;
+document.getElementById("cargo").value=f.CARGO;
+
+}else{
+
+document.getElementById("nome").value="";
+document.getElementById("cargo").value="";
+
+}
+
+}
+
+/* REGISTRAR */
+
+async function registrar(){
+
+let mat=document.getElementById("matricula").value;
+let nome=document.getElementById("nome").value;
+let cargo=document.getElementById("cargo").value;
+let tipo=document.getElementById("tipo").value;
+let desc=document.getElementById("descricao").value;
+
+if(mat=="" || desc==""){
+alert("Matrícula e descrição são obrigatórios");
+return;
+}
+
+let agora=new Date();
+
+let data=agora.toLocaleDateString();
+let hora=agora.toLocaleTimeString();
+
+let dados={
+
+matricula:mat,
+nome:nome,
+cargo:cargo,
+tipo:tipo,
+descricao:desc,
+analista:usuarioAtual,
+data:data,
+hora:hora
+
+};
+
+await fetch(API_REGISTRO,{
+method:"POST",
+body:JSON.stringify(dados)
+});
+
+alert("Atendimento registrado com sucesso!");
+
+document.getElementById("descricao").value="";
+
+}
+
+</script>
+
+</body>
+</html>
