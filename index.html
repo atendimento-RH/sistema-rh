@@ -10,10 +10,6 @@ body{
 margin:0;
 font-family:Calibri;
 background:#f2f6fc;
-background-image: url('https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg');
-background-repeat:no-repeat;
-background-position:center;
-background-size:50%;
 }
 
 #loginContainer{
@@ -69,14 +65,24 @@ height:70px;
 display:flex;
 align-items:center;
 justify-content:space-between;
-padding:0 40px;
-text-align:center;
+padding:0 20px;
+}
+
+.topbar .left{
+display:flex;
+align-items:center;
+}
+
+.topbar img{
+height:50px;
+margin-right:15px;
 }
 
 .topbar h2{
-margin:0 auto;
-text-align:center;
+margin:0;
 font-size:22px;
+flex:1;
+text-align:center; /* centraliza entre a imagem e o botão */
 }
 
 .logout{
@@ -87,6 +93,7 @@ border-radius:6px;
 cursor:pointer;
 color:#1e4fa3;
 font-weight:bold;
+margin-left:20px;
 }
 
 .container{
@@ -165,10 +172,14 @@ background:#163a7a;
 <!-- PAINEL -->
 
 <div id="painel" style="display:none">
+
 <div class="topbar">
+<div class="left">
+<img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" alt="Logo"> <!-- imagem canto esquerdo -->
 <h2>Painel de Atendimentos RH</h2>
+</div>
 <div>
-Analista: <b id="usuarioLogado"></b>
+USUÁRIO: <b id="usuarioLogado"></b>
 <button class="logout" onclick="logout()">Sair</button>
 </div>
 </div>
@@ -312,7 +323,6 @@ async function registrar(){
 
     alert("Atendimento registrado com sucesso!");
 
-    // limpar formulario
     document.getElementById("matricula").value="";
     document.getElementById("nome").value="";
     document.getElementById("cargo").value="";
