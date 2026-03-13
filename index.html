@@ -3,13 +3,13 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Sistema de Atendimentos RH</title>
+<title>Painel de Atendimentos RH</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Calibri, Arial;
+font-family:Calibri;
 background:#f2f6fc;
 }
 
@@ -27,13 +27,13 @@ background:white;
 padding:50px;
 border-radius:10px;
 box-shadow:0 10px 25px rgba(0,0,0,0.15);
-width:340px;
+width:350px;
 text-align:center;
 }
 
 .loginBox h2{
-margin-top:0;
 color:#1e4fa3;
+margin-top:0;
 }
 
 .loginBox input{
@@ -45,14 +45,13 @@ border-radius:6px;
 }
 
 .loginBtn{
-width:100%;
 margin-top:20px;
+width:100%;
 padding:12px;
 background:#1e4fa3;
 border:none;
 color:white;
 border-radius:6px;
-font-size:15px;
 cursor:pointer;
 }
 
@@ -73,24 +72,16 @@ justify-content:space-between;
 padding:0 40px;
 }
 
-.topbar h2{
-margin:0;
-}
-
 .logout{
 background:white;
-color:#1e4fa3;
 border:none;
 padding:8px 14px;
 border-radius:6px;
 cursor:pointer;
+color:#1e4fa3;
 }
 
-/* PAINEL */
-
-#painel{
-display:none;
-}
+/* CONTAINER */
 
 .container{
 max-width:1100px;
@@ -105,26 +96,19 @@ border-radius:10px;
 box-shadow:0 6px 20px rgba(0,0,0,0.08);
 }
 
-.card h3{
-margin-top:0;
-color:#1e4fa3;
-}
-
-/* FORM */
-
 label{
 display:block;
 margin-top:15px;
-font-size:14px;
 }
 
 input,select{
 width:100%;
-padding:10px;
+padding:12px;
 border:1px solid #ccc;
 border-radius:6px;
 margin-top:5px;
 font-family:Calibri;
+box-sizing:border-box;
 }
 
 .botao{
@@ -136,11 +120,26 @@ border:none;
 border-radius:6px;
 cursor:pointer;
 width:100%;
-font-size:15px;
 }
 
-.botao:hover{
-background:#163b7a;
+/* TABELA */
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:30px;
+}
+
+th{
+background:#1e4fa3;
+color:white;
+padding:10px;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #ddd;
+text-align:center;
 }
 
 </style>
@@ -148,8 +147,6 @@ background:#163b7a;
 </head>
 
 <body>
-
-<!-- LOGIN -->
 
 <div id="loginContainer">
 
@@ -168,13 +165,11 @@ background:#163b7a;
 
 </div>
 
-<!-- PAINEL -->
-
-<div id="painel">
+<div id="painel" style="display:none">
 
 <div class="topbar">
 
-<h2>Gestão de Atendimentos RH</h2>
+<h2>Painel de Atendimentos RH</h2>
 
 <div>
 Analista: <b id="usuarioLogado"></b>
@@ -198,18 +193,44 @@ Analista: <b id="usuarioLogado"></b>
 <label>Tipo de Atendimento</label>
 
 <select id="tipo">
-<option>Acerto Salarial</option>
-<option>Cadastro</option>
-<option>Atestado</option>
-<option>Benefícios</option>
-<option>Desligamento</option>
-<option>Ponto</option>
-<option>Férias</option>
+<option>ACERTO SALARIAL</option>
+<option>CADASTRO</option>
+<option>ATESTADO</option>
+<option>BENEFÍCIOS</option>
+<option>DESLIGAMENTO</option>
+<option>PONTO</option>
+<option>FÉRIAS</option>
 </select>
 
 <label>Descrição *</label> <input id="descricao">
 
 <button class="botao" onclick="registrar()">Registrar Atendimento</button>
+
+</div>
+
+<div class="card">
+
+<h3>Atendimentos Registrados</h3>
+
+<table id="tabela">
+
+<thead>
+
+<tr>
+<th>DATA</th>
+<th>HORA</th>
+<th>MATRÍCULA</th>
+<th>NOME</th>
+<th>TIPO</th>
+<th>DESCRIÇÃO</th>
+<th>ANALISTA</th>
+</tr>
+
+</thead>
+
+<tbody id="listaAtendimentos"></tbody>
+
+</table>
 
 </div>
 
@@ -219,8 +240,6 @@ Analista: <b id="usuarioLogado"></b>
 
 <script>
 
-/* LINKS */
-
 const URL_USUARIOS="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/USUARIOS";
 const URL_BASE="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/BASE";
 
@@ -228,30 +247,25 @@ const API_REGISTRO="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfV
 
 let usuarios=[];
 let funcionarios=[];
-let usuarioAtual="";
+let atendimentos=[];
 
-/* carregar dados */
+let usuarioAtual="";
 
 async function carregar(){
 
-usuarios = await fetch(URL_USUARIOS).then(r=>r.json());
-funcionarios = await fetch(URL_BASE).then(r=>r.json());
+usuarios=await fetch(URL_USUARIOS).then(r=>r.json());
+funcionarios=await fetch(URL_BASE).then(r=>r.json());
 
 }
 
 carregar();
-
-/* LOGIN */
 
 function login(){
 
 let u=document.getElementById("usuario").value.trim();
 let s=document.getElementById("senha").value.trim();
 
-let ok=usuarios.find(x=>
-String(x.USUARIO).trim()===u &&
-String(x.SENHA).trim()===s
-);
+let ok=usuarios.find(x=>x.USUARIO==u && x.SENHA==s);
 
 if(ok){
 
@@ -270,19 +284,15 @@ document.getElementById("erro").innerText="Usuário ou senha inválidos";
 
 }
 
-/* LOGOUT */
-
 function logout(){
 location.reload();
 }
-
-/* BUSCAR FUNCIONARIO */
 
 function buscarFuncionario(){
 
 let mat=document.getElementById("matricula").value;
 
-let f=funcionarios.find(x=>String(x.MATRICULA).trim()===mat);
+let f=funcionarios.find(x=>x.MATRICULA==mat);
 
 if(f){
 
@@ -298,7 +308,25 @@ document.getElementById("cargo").value="";
 
 }
 
-/* REGISTRAR */
+function adicionarTabela(d){
+
+let tabela=document.getElementById("listaAtendimentos");
+
+let linha=`
+<tr>
+<td>${d.data}</td>
+<td>${d.hora}</td>
+<td>${d.matricula}</td>
+<td>${d.nome}</td>
+<td>${d.tipo}</td>
+<td>${d.descricao}</td>
+<td>${d.analista}</td>
+</tr>
+`;
+
+tabela.innerHTML=linha+tabela.innerHTML;
+
+}
 
 async function registrar(){
 
@@ -319,7 +347,6 @@ let data=agora.toLocaleDateString();
 let hora=agora.toLocaleTimeString();
 
 let dados={
-
 matricula:mat,
 nome:nome,
 cargo:cargo,
@@ -328,7 +355,6 @@ descricao:desc,
 analista:usuarioAtual,
 data:data,
 hora:hora
-
 };
 
 await fetch(API_REGISTRO,{
@@ -336,9 +362,13 @@ method:"POST",
 body:JSON.stringify(dados)
 });
 
-alert("Atendimento registrado com sucesso!");
+adicionarTabela(dados);
 
+document.getElementById("matricula").value="";
+document.getElementById("nome").value="";
+document.getElementById("cargo").value="";
 document.getElementById("descricao").value="";
+document.getElementById("tipo").selectedIndex=0;
 
 }
 
