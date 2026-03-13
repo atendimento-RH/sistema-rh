@@ -231,16 +231,16 @@ async function registrar(){
 
 // ESTATÍSTICAS
 function atualizarEstatisticas(){
-    const selData=document.getElementById("calendario").value;
+    const selData=document.getElementById("calendario").value; // yyyy-mm-dd
     if(!selData) return;
     const registrosDoDia=registros.filter(r=>{
-        let partes=r.data.split("/"); // dd/mm/yyyy
-        let d=r.partesToDate=partes[2]+"-"+partes[1]+"-"+partes[0]; // yyyy-mm-dd
+        let partes=r.DATA.split("/"); // dd/mm/yyyy
+        let d=partes[2]+"-"+partes[1]+"-"+partes[0]; // yyyy-mm-dd
         return d===selData;
     });
     document.getElementById("qtdAtendimentos").innerText="Qtd de atendimentos: "+registrosDoDia.length;
     const tipos={};
-    registrosDoDia.forEach(r=>{tipos[r.tipo]=(tipos[r.tipo]||0)+1;});
+    registrosDoDia.forEach(r=>{tipos[r.TIPO]=(tipos[r.TIPO]||0)+1;});
     const top3=Object.entries(tipos).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>`${e[0]} (${e[1]})`);
     document.getElementById("topAtendimentos").innerText="Top 3 atendimentos: "+(top3.join(", ")||"-");
 }
