@@ -1,230 +1,45 @@
 <!DOCTYPE html>
-
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <title>Painel de Atendimentos RH</title>
-
-<!-- Favicon -->
-
 <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/1/1a/Logomarca_da_Prefeitura_do_Rio_de_Janeiro_na_vertical_lan%C3%A7ada_em_2025.png" type="image/png">
 
 <style>
-body{
-margin:0;
-font-family:Calibri;
-background:#f2f6fc;
-height:100vh;
-display:flex;
-flex-direction:column;
-}
-
+body{margin:0;font-family:Calibri;background:#f2f6fc;height:100vh;display:flex;flex-direction:column;}
 /* LOGIN */
-#loginContainer{
-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.loginBox{
-background:white;
-padding:50px;
-border-radius:10px;
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
-width:350px;
-text-align:center;
-}
-
-.loginBox h2{
-color:#1e4fa3;
-margin-top:0;
-}
-
-.loginBox input{
-width:100%;
-padding:12px;
-margin-top:12px;
-border:1px solid #ccc;
-border-radius:6px;
-}
-
-.loginBtn{
-margin-top:20px;
-width:100%;
-padding:12px;
-background:#1e4fa3;
-border:none;
-color:white;
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-}
-
-#erro{
-color:red;
-margin-top:10px;
-}
+#loginContainer{height:100vh;display:flex;align-items:center;justify-content:center;}
+.loginBox{background:white;padding:50px;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,0.15);width:350px;text-align:center;}
+.loginBox h2{color:#1e4fa3;margin-top:0;}
+.loginBox input{width:100%;padding:12px;margin-top:12px;border:1px solid #ccc;border-radius:6px;}
+.loginBtn{margin-top:20px;width:100%;padding:12px;background:#1e4fa3;border:none;color:white;border-radius:6px;cursor:pointer;font-weight:bold;}
+#erro{color:red;margin-top:10px;}
 
 /* PAINEL */
-#painel{
-display:none;
-flex:1;
-position:relative;
-}
+#painel{display:none;flex:1;position:relative;}
+.header{position:fixed;top:0;left:0;width:100%;background:#1e4fa3;display:flex;align-items:center;justify-content:space-between;padding:10px 25px;box-sizing:border-box;height:80px;z-index:1000;box-shadow:0 4px 12px rgba(0,0,0,0.2);color:white;}
+.header img{height:60px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+.headerTitulo{position:absolute;left:50%;transform:translateX(-50%);font-size:24px;font-weight:bold;color:white;}
+.userInfo{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.2);padding:6px 12px;border-radius:8px;font-weight:bold;color:white;}
+.logoutBtn{background:white;border:none;color:#1e4fa3;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;transition:0.2s;}
+.logoutBtn:hover{background:#e6e6e6;}
 
-/* Topo estilo sistema */
-.header{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-background:#1e4fa3;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:10px 25px;
-box-sizing:border-box;
-height:80px;
-z-index:1000;
-box-shadow:0 4px 12px rgba(0,0,0,0.2);
-color:white;
-}
-
-.header img{
-height:60px;
-border-radius:10px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
-}
-
-.headerTitulo{
-position:absolute;
-left:50%;
-transform:translateX(-50%);
-font-size:24px;
-font-weight:bold;
-color:white;
-}
-
-.userInfo{
-display:flex;
-align-items:center;
-gap:10px;
-background:rgba(255,255,255,0.2);
-padding:6px 12px;
-border-radius:8px;
-font-weight:bold;
-color:white;
-}
-
-.logoutBtn{
-background:white;
-border:none;
-color:#1e4fa3;
-padding:6px 12px;
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-transition:0.2s;
-}
-
-.logoutBtn:hover{
-background:#e6e6e6;
-}
-
-/* Layout central com dois cards */
-.centralContainer{
-flex:1;
-display:flex;
-align-items:flex-start;
-justify-content:center;
-gap:30px;
-margin-top:100px;
-padding-bottom:50px;
-flex-wrap:wrap;
-}
-
-/* Cards */
-.container{
-max-width:600px;
-width:100%;
-}
-
-.card{
-background:white;
-padding:35px;
-border-radius:10px;
-box-shadow:0 6px 20px rgba(0,0,0,0.08);
-display:flex;
-flex-direction:column;
-align-items:center;
-}
-
-.card h3{
-margin-top:0;
-color:#1e4fa3;
-text-align:center;
-}
-
-label{
-display:block;
-margin-top:15px;
-font-weight:bold;
-width:100%;
-}
-
-input,select{
-width:100%;
-padding:12px;
-border:1px solid #ccc;
-border-radius:6px;
-margin-top:5px;
-font-family:Calibri;
-box-sizing:border-box;
-font-size:15px;
-}
-
-.botao{
-margin-top:25px;
-padding:14px;
-background:#1e4fa3;
-color:white;
-border:none;
-border-radius:6px;
-cursor:pointer;
-width:100%;
-font-size:15px;
-font-weight:bold;
-}
-
-.botao:hover{
-background:#163a7a;
-}
-
-/* Notificação */
-#notificacao{
-position:fixed;
-top:20px;
-left:50%;
-transform:translateX(-50%);
-background:#1e4fa3;
-color:white;
-padding:15px 25px;
-border-radius:8px;
-box-shadow:0 6px 20px rgba(0,0,0,0.2);
-display:none;
-font-weight:bold;
-z-index:2000;
-font-family:Calibri;
-}
+/* Layout cards */
+.centralContainer{flex:1;display:flex;align-items:flex-start;justify-content:center;gap:30px;margin-top:100px;padding-bottom:50px;flex-wrap:wrap;}
+.container{max-width:600px;width:100%;}
+.card{background:white;padding:35px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);display:flex;flex-direction:column;align-items:center;}
+.card h3{margin-top:0;color:#1e4fa3;text-align:center;}
+label{display:block;margin-top:15px;font-weight:bold;width:100%;}
+input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;margin-top:5px;font-family:Calibri;box-sizing:border-box;font-size:15px;}
+.botao{margin-top:25px;padding:14px;background:#1e4fa3;color:white;border:none;border-radius:6px;cursor:pointer;width:100%;font-size:15px;font-weight:bold;}
+.botao:hover{background:#163a7a;}
+#notificacao{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#1e4fa3;color:white;padding:15px 25px;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,0.2);display:none;font-weight:bold;z-index:2000;font-family:Calibri;}
 </style>
-
 </head>
 
 <body>
 
 <!-- LOGIN -->
-
 <div id="loginContainer">
 <div class="loginBox">
 <h2>Sistema RH</h2>
@@ -236,34 +51,27 @@ font-family:Calibri;
 </div>
 
 <!-- PAINEL -->
-
 <div id="painel">
-
 <div class="header">
 <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" alt="Logo">
 <div class="headerTitulo">Painel de Atendimentos RH</div>
-<div class="userInfo">
-USUÁRIO: <b id="usuarioLogado"></b>
-<button class="logoutBtn" onclick="logout()">SAIR</button>
-</div>
+<div class="userInfo">USUÁRIO: <b id="usuarioLogado"></b><button class="logoutBtn" onclick="logout()">SAIR</button></div>
 </div>
 
 <div class="centralContainer">
 
 <!-- Card Registro Atendimento -->
-
 <div class="container">
 <div class="card">
 <h3>Registrar Atendimento</h3>
-
-<label>Matrícula *</label> <input id="matricula" oninput="buscarFuncionario()">
-
-<label>Nome</label> <input id="nome" readonly>
-
-<label>Cargo</label> <input id="cargo" readonly>
-
-<label>Tipo de Atendimento *</label> <select id="tipo">
-
+<label>Matrícula *</label>
+<input id="matricula" oninput="buscarFuncionario()">
+<label>Nome</label>
+<input id="nome" readonly>
+<label>Cargo</label>
+<input id="cargo" readonly>
+<label>Tipo de Atendimento *</label>
+<select id="tipo">
 <option value="">-- selecione --</option>
 <option>ACERTO SALARIAL</option>
 <option>CADASTRO</option>
@@ -274,32 +82,26 @@ USUÁRIO: <b id="usuarioLogado"></b>
 <option>FÉRIAS</option>
 <option>OUTROS</option>
 </select>
-
-<label>Status *</label> <select id="status">
-
+<label>Status *</label>
+<select id="status">
 <option value="">-- selecione --</option>
 <option>PENDENTE</option>
 <option>RESOLVIDO</option>
 </select>
-
-<label>Descrição *</label> <input id="descricao">
-
+<label>Descrição *</label>
+<input id="descricao">
 <button class="botao" id="registrarBtn" onclick="registrar()">Registrar Atendimento</button>
-
 </div>
 </div>
 
 <!-- Card Lateral - Calendário e estatísticas -->
-
 <div class="container">
 <div class="card">
 <h3>Estatísticas do Dia</h3>
-
-<label>Selecione a Data:</label> <input type="date" id="calendario">
-
+<label>Selecione a Data:</label>
+<input type="date" id="calendario">
 <p id="qtdAtendimentos">Qtd de atendimentos: 0</p>
 <p id="topAtendimentos">Top 3 atendimentos: -</p>
-
 </div>
 </div>
 
@@ -311,45 +113,42 @@ USUÁRIO: <b id="usuarioLogado"></b>
 const URL_USUARIOS="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/USUARIOS";
 const URL_BASE="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/BASE";
 const API_REGISTRO="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec";
-const API_REGISTROS_DIARIOS="https://script.google.com/macros/s/SEU_SCRIPT_DE_REGISTROS/exec"; // criar endpoint para pegar todos registros
 
-let usuarios=[];
-let funcionarios=[];
+let usuarios=[], funcionarios=[], registros=[];
 let usuarioAtual="";
-let registros=[];
 
-async function carregar(){
-    usuarios = await fetch(URL_USUARIOS).then(r=>r.json());
-    funcionarios = await fetch(URL_BASE).then(r=>r.json());
-    // Buscar registros do dia/total
-    registros = await fetch(https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec).then(r=>r.json());
+// CARREGAR USUÁRIOS
+async function carregarUsuarios(){
+    try{
+        usuarios = await fetch(URL_USUARIOS).then(r=>r.json());
+    }catch(e){
+        console.error(e);
+        document.getElementById("erro").innerText="Erro ao carregar usuários";
+    }
 }
-carregar();
 
 window.onload=function(){
+    carregarUsuarios();
+
     let usuarioSalvo=localStorage.getItem("usuarioLogado");
     if(usuarioSalvo){
         usuarioAtual=usuarioSalvo;
         document.getElementById("loginContainer").style.display="none";
         document.getElementById("painel").style.display="block";
         document.getElementById("usuarioLogado").innerText=usuarioAtual;
+        carregarDados(); // após login, carregar registros e funcionários
     }
 
-    // Enter para logar
     document.getElementById("usuario").addEventListener("keyup", e=>{if(e.key==="Enter") login();});
     document.getElementById("senha").addEventListener("keyup", e=>{if(e.key==="Enter") login();});
-
-    // Enter para registrar atendimento
     ["matricula","tipo","status","descricao"].forEach(id=>{
         document.getElementById(id).addEventListener("keyup", e=>{if(e.key==="Enter") registrar();});
     });
-
-    // Atualizar estatísticas ao mudar data
     document.getElementById("calendario").addEventListener("change", atualizarEstatisticas);
 }
 
-/* LOGIN */
-function login(){
+// LOGIN
+async function login(){
     let u=document.getElementById("usuario").value.trim();
     let s=document.getElementById("senha").value.trim();
     let ok=usuarios.find(x=>x.USUARIO==u && x.SENHA==s);
@@ -359,31 +158,36 @@ function login(){
         document.getElementById("loginContainer").style.display="none";
         document.getElementById("painel").style.display="block";
         document.getElementById("usuarioLogado").innerText=usuarioAtual;
+        await carregarDados();
     }else{
         document.getElementById("erro").innerText="Usuário ou senha inválidos";
     }
 }
 
-/* LOGOUT */
+// LOGOUT
 function logout(){
     localStorage.removeItem("usuarioLogado");
     location.reload();
 }
 
-/* BUSCAR FUNCIONARIO */
-function buscarFuncionario(){
-    let mat=document.getElementById("matricula").value;
-    let f=funcionarios.find(x=>x.MATRICULA==mat);
-    if(f){
-        document.getElementById("nome").value=f.NOME;
-        document.getElementById("cargo").value=f.CARGO;
-    }else{
-        document.getElementById("nome").value="";
-        document.getElementById("cargo").value="";
+// BUSCAR FUNCIONARIO
+async function carregarDados(){
+    try{
+        funcionarios = await fetch(URL_BASE).then(r=>r.json());
+        registros = await fetch(API_REGISTRO).then(r=>r.json());
+    }catch(e){
+        console.error(e);
     }
 }
 
-/* NOTIFICAÇÃO */
+function buscarFuncionario(){
+    let mat=document.getElementById("matricula").value;
+    let f=funcionarios.find(x=>x.MATRICULA==mat);
+    if(f){document.getElementById("nome").value=f.NOME;document.getElementById("cargo").value=f.CARGO;}
+    else{document.getElementById("nome").value="";document.getElementById("cargo").value="";}
+}
+
+// NOTIFICAÇÃO
 function notificar(msg, sucesso=true){
     const box=document.getElementById("notificacao");
     box.innerText=msg;
@@ -392,7 +196,7 @@ function notificar(msg, sucesso=true){
     setTimeout(()=>{box.style.display="none";},2500);
 }
 
-/* REGISTRAR ATENDIMENTO */
+// REGISTRAR ATENDIMENTO
 let registrando=false;
 async function registrar(){
     if(registrando) return;
@@ -405,71 +209,41 @@ async function registrar(){
     let tipo=document.getElementById("tipo").value;
     let status=document.getElementById("status").value;
     let desc=document.getElementById("descricao").value;
-
     if(mat=="" || desc=="" || tipo=="" || status==""){
         notificar("Preencha todos os campos obrigatórios", false);
         btn.disabled=false;
         registrando=false;
         return;
     }
-
-    let agora=new Date();
-    let data=agora.toLocaleDateString();
-    let hora=agora.toLocaleTimeString();
-
-    let dados={
-        matricula:mat,
-        nome:nome,
-        cargo:cargo,
-        tipo:tipo,
-        status:status,
-        descricao:desc,
-        analista:usuarioAtual,
-        data:data,
-        hora:hora
-    };
-
-    await fetch(API_REGISTRO,{
-        method:"POST",
-        body:JSON.stringify(dados)
-    });
-
+    let dados={matricula:mat,nome:nome,cargo:cargo,tipo:tipo,status:status,descricao:desc,analista:usuarioAtual};
+    await fetch(API_REGISTRO,{method:"POST",body:JSON.stringify(dados)});
     notificar("Atendimento registrado com sucesso!");
-
     document.getElementById("matricula").value="";
     document.getElementById("nome").value="";
     document.getElementById("cargo").value="";
     document.getElementById("tipo").selectedIndex=0;
     document.getElementById("status").selectedIndex=0;
     document.getElementById("descricao").value="";
-
     btn.disabled=false;
     registrando=false;
-
-    // atualizar estatísticas
     atualizarEstatisticas();
 }
 
-/* ESTATISTICAS */
+// ESTATÍSTICAS
 function atualizarEstatisticas(){
     const selData=document.getElementById("calendario").value;
     if(!selData) return;
-    const registrosDoDia=registros.filter(r=>r.data==formatarData(selData));
-    document.getElementById("qtdAtendimentos").innerText="Qtd de atendimentos: "+registrosDoDia.length;
-
-    const tipos={};
-    registrosDoDia.forEach(r=>{
-        tipos[r.tipo]=(tipos[r.tipo]||0)+1;
+    const registrosDoDia=registros.filter(r=>{
+        let partes=r.data.split("/"); // dd/mm/yyyy
+        let d=r.partesToDate=partes[2]+"-"+partes[1]+"-"+partes[0]; // yyyy-mm-dd
+        return d===selData;
     });
+    document.getElementById("qtdAtendimentos").innerText="Qtd de atendimentos: "+registrosDoDia.length;
+    const tipos={};
+    registrosDoDia.forEach(r=>{tipos[r.tipo]=(tipos[r.tipo]||0)+1;});
     const top3=Object.entries(tipos).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>`${e[0]} (${e[1]})`);
     document.getElementById("topAtendimentos").innerText="Top 3 atendimentos: "+(top3.join(", ")||"-");
 }
-
-function formatarData(input){
-    const d=new Date(input);
-    return d.toLocaleDateString();
-}
 </script>
-
 </body>
 </html>
