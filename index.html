@@ -6,14 +6,15 @@
 <title>Painel de Atendimentos RH</title>
 
 <style>
-
 body{
 margin:0;
 font-family:Calibri;
 background:#f2f6fc;
+background-image: url('URL_DA_IMAGEM'); /* Coloque aqui sua URL da marca d'água */
+background-repeat:no-repeat;
+background-position:center;
+background-size:50%;
 }
-
-/* LOGIN */
 
 #loginContainer{
 height:100vh;
@@ -61,8 +62,6 @@ color:red;
 margin-top:10px;
 }
 
-/* TOPO */
-
 .topbar{
 background:#1e4fa3;
 color:white;
@@ -71,6 +70,13 @@ display:flex;
 align-items:center;
 justify-content:space-between;
 padding:0 40px;
+text-align:center;
+}
+
+.topbar h2{
+margin:0 auto;
+text-align:center;
+font-size:22px;
 }
 
 .logout{
@@ -83,12 +89,12 @@ color:#1e4fa3;
 font-weight:bold;
 }
 
-/* CONTAINER */
-
 .container{
 max-width:900px;
 margin:40px auto;
 padding:0 20px;
+background: rgba(255,255,255,0.95);
+border-radius:10px;
 }
 
 .card{
@@ -101,6 +107,7 @@ box-shadow:0 6px 20px rgba(0,0,0,0.08);
 .card h3{
 margin-top:0;
 color:#1e4fa3;
+text-align:center;
 }
 
 label{
@@ -146,41 +153,28 @@ background:#163a7a;
 <!-- LOGIN -->
 
 <div id="loginContainer">
-
 <div class="loginBox">
-
 <h2>Sistema RH</h2>
-
 <input id="usuario" placeholder="Usuário">
 <input id="senha" type="password" placeholder="Senha">
-
 <button class="loginBtn" onclick="login()">Entrar</button>
-
 <div id="erro"></div>
-
 </div>
-
 </div>
 
 <!-- PAINEL -->
 
 <div id="painel" style="display:none">
-
 <div class="topbar">
-
 <h2>Painel de Atendimentos RH</h2>
-
 <div>
 Analista: <b id="usuarioLogado"></b>
 <button class="logout" onclick="logout()">Sair</button>
 </div>
-
 </div>
 
 <div class="container">
-
 <div class="card">
-
 <h3>Registrar Atendimento</h3>
 
 <label>Matrícula *</label> <input id="matricula" oninput="buscarFuncionario()">
@@ -189,9 +183,9 @@ Analista: <b id="usuarioLogado"></b>
 
 <label>Cargo</label> <input id="cargo" readonly>
 
-<label>Tipo de Atendimento</label>
+<label>Tipo de Atendimento *</label> <select id="tipo">
 
-<select id="tipo">
+<option value="">-- selecione --</option>
 <option>ACERTO SALARIAL</option>
 <option>CADASTRO</option>
 <option>ATESTADO</option>
@@ -199,177 +193,135 @@ Analista: <b id="usuarioLogado"></b>
 <option>DESLIGAMENTO</option>
 <option>PONTO</option>
 <option>FÉRIAS</option>
+<option>OUTROS</option>
 </select>
 
-<label>Status</label>
+<label>Status *</label> <select id="status">
 
-<select id="status">
+<option value="">-- selecione --</option>
 <option>PENDENTE</option>
 <option>RESOLVIDO</option>
 </select>
 
 <label>Descrição *</label> <input id="descricao">
 
-<button class="botao" onclick="registrar()">Registrar Atendimento</button>
+<button class="botao" id="registrarBtn" onclick="registrar()">Registrar Atendimento</button>
 
 </div>
-
 </div>
-
 </div>
 
 <script>
-
-/* LINKS PLANILHAS */
-
 const URL_USUARIOS="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/USUARIOS";
 const URL_BASE="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/BASE";
-
 const API_REGISTRO="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec";
 
 let usuarios=[];
 let funcionarios=[];
 let usuarioAtual="";
 
-/* carregar dados */
-
 async function carregar(){
-
-usuarios = await fetch(URL_USUARIOS).then(r=>r.json());
-funcionarios = await fetch(URL_BASE).then(r=>r.json());
-
+    usuarios = await fetch(URL_USUARIOS).then(r=>r.json());
+    funcionarios = await fetch(URL_BASE).then(r=>r.json());
 }
-
 carregar();
 
 /* manter login ao atualizar */
-
 window.onload=function(){
-
-let usuarioSalvo=localStorage.getItem("usuarioLogado");
-
-if(usuarioSalvo){
-
-usuarioAtual=usuarioSalvo;
-
-document.getElementById("loginContainer").style.display="none";
-document.getElementById("painel").style.display="block";
-
-document.getElementById("usuarioLogado").innerText=usuarioAtual;
-
-}
-
+    let usuarioSalvo=localStorage.getItem("usuarioLogado");
+    if(usuarioSalvo){
+        usuarioAtual=usuarioSalvo;
+        document.getElementById("loginContainer").style.display="none";
+        document.getElementById("painel").style.display="block";
+        document.getElementById("usuarioLogado").innerText=usuarioAtual;
+    }
 }
 
 /* LOGIN */
-
 function login(){
-
-let u=document.getElementById("usuario").value.trim();
-let s=document.getElementById("senha").value.trim();
-
-let ok=usuarios.find(x=>x.USUARIO==u && x.SENHA==s);
-
-if(ok){
-
-usuarioAtual=ok.NOME;
-
-localStorage.setItem("usuarioLogado",usuarioAtual);
-
-document.getElementById("loginContainer").style.display="none";
-document.getElementById("painel").style.display="block";
-
-document.getElementById("usuarioLogado").innerText=usuarioAtual;
-
-}else{
-
-document.getElementById("erro").innerText="Usuário ou senha inválidos";
-
-}
-
+    let u=document.getElementById("usuario").value.trim();
+    let s=document.getElementById("senha").value.trim();
+    let ok=usuarios.find(x=>x.USUARIO==u && x.SENHA==s);
+    if(ok){
+        usuarioAtual=ok.NOME;
+        localStorage.setItem("usuarioLogado",usuarioAtual);
+        document.getElementById("loginContainer").style.display="none";
+        document.getElementById("painel").style.display="block";
+        document.getElementById("usuarioLogado").innerText=usuarioAtual;
+    }else{
+        document.getElementById("erro").innerText="Usuário ou senha inválidos";
+    }
 }
 
 /* LOGOUT */
-
 function logout(){
-
-localStorage.removeItem("usuarioLogado");
-
-location.reload();
-
+    localStorage.removeItem("usuarioLogado");
+    location.reload();
 }
 
 /* BUSCAR FUNCIONARIO */
-
 function buscarFuncionario(){
-
-let mat=document.getElementById("matricula").value;
-
-let f=funcionarios.find(x=>x.MATRICULA==mat);
-
-if(f){
-
-document.getElementById("nome").value=f.NOME;
-document.getElementById("cargo").value=f.CARGO;
-
-}else{
-
-document.getElementById("nome").value="";
-document.getElementById("cargo").value="";
-
-}
-
+    let mat=document.getElementById("matricula").value;
+    let f=funcionarios.find(x=>x.MATRICULA==mat);
+    if(f){
+        document.getElementById("nome").value=f.NOME;
+        document.getElementById("cargo").value=f.CARGO;
+    }else{
+        document.getElementById("nome").value="";
+        document.getElementById("cargo").value="";
+    }
 }
 
 /* REGISTRAR ATENDIMENTO */
-
 async function registrar(){
+    const btn=document.getElementById("registrarBtn");
+    btn.disabled=true; // bloqueia botão até concluir
+    let mat=document.getElementById("matricula").value;
+    let nome=document.getElementById("nome").value;
+    let cargo=document.getElementById("cargo").value;
+    let tipo=document.getElementById("tipo").value;
+    let status=document.getElementById("status").value;
+    let desc=document.getElementById("descricao").value;
 
-let mat=document.getElementById("matricula").value;
-let nome=document.getElementById("nome").value;
-let cargo=document.getElementById("cargo").value;
-let tipo=document.getElementById("tipo").value;
-let status=document.getElementById("status").value;
-let desc=document.getElementById("descricao").value;
+    if(mat=="" || desc=="" || tipo=="" || status==""){
+        alert("Preencha todos os campos obrigatórios");
+        btn.disabled=false;
+        return;
+    }
 
-if(mat=="" || desc==""){
-alert("Matrícula e descrição são obrigatórios");
-return;
+    let agora=new Date();
+    let data=agora.toLocaleDateString();
+    let hora=agora.toLocaleTimeString();
+
+    let dados={
+        matricula:mat,
+        nome:nome,
+        cargo:cargo,
+        tipo:tipo,
+        status:status,
+        descricao:desc,
+        analista:usuarioAtual,
+        data:data,
+        hora:hora
+    };
+
+    await fetch(API_REGISTRO,{
+        method:"POST",
+        body:JSON.stringify(dados)
+    });
+
+    alert("Atendimento registrado com sucesso!");
+
+    // limpar formulario
+    document.getElementById("matricula").value="";
+    document.getElementById("nome").value="";
+    document.getElementById("cargo").value="";
+    document.getElementById("tipo").selectedIndex=0;
+    document.getElementById("status").selectedIndex=0;
+    document.getElementById("descricao").value="";
+
+    btn.disabled=false; // libera botão novamente
 }
-
-let agora=new Date();
-
-let data=agora.toLocaleDateString();
-let hora=agora.toLocaleTimeString();
-
-let dados={
-matricula:mat,
-nome:nome,
-cargo:cargo,
-tipo:tipo,
-status:status,
-descricao:desc,
-analista:usuarioAtual,
-data:data,
-hora:hora
-};
-
-await fetch(API_REGISTRO,{
-method:"POST",
-body:JSON.stringify(dados)
-});
-
-alert("Atendimento registrado com sucesso!");
-
-document.getElementById("matricula").value="";
-document.getElementById("nome").value="";
-document.getElementById("cargo").value="";
-document.getElementById("descricao").value="";
-document.getElementById("tipo").selectedIndex=0;
-document.getElementById("status").selectedIndex=0;
-
-}
-
 </script>
 
 </body>
