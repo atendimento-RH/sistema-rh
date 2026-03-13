@@ -10,6 +10,9 @@ body{
 margin:0;
 font-family:Calibri;
 background:#f2f6fc;
+height:100vh;
+display:flex;
+flex-direction:column;
 }
 
 /* LOGIN */
@@ -61,17 +64,14 @@ margin-top:10px;
 
 /* PAINEL */
 #painel{
-display:flex;
-flex-direction:column;
-align-items:center;
-height:100vh;
-justify-content:center;
+display:none;
+flex:1;
 position:relative;
 }
 
 /* Topo */
 .header{
-position:absolute;
+position:fixed;
 top:0;
 left:0;
 width:100%;
@@ -82,6 +82,7 @@ justify-content:space-between;
 padding:10px 25px;
 box-sizing:border-box;
 height:80px;
+z-index:1000;
 }
 
 .header img{
@@ -106,6 +107,16 @@ padding:6px 12px;
 border-radius:6px;
 cursor:pointer;
 font-weight:bold;
+}
+
+/* Container centralizado */
+.centralContainer{
+flex:1;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+margin-top:80px; /* espaço abaixo do header */
 }
 
 /* Título centralizado */
@@ -193,7 +204,7 @@ background:#163a7a;
 
 <!-- PAINEL -->
 
-<div id="painel" style="display:none">
+<div id="painel">
 
 <div class="header">
 <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" alt="Logo">
@@ -203,6 +214,7 @@ USUÁRIO: <b id="usuarioLogado"></b>
 </div>
 </div>
 
+<div class="centralContainer">
 <div class="painelTitulo">Painel de Atendimentos RH</div>
 
 <div class="container">
@@ -241,7 +253,7 @@ USUÁRIO: <b id="usuarioLogado"></b>
 
 </div>
 </div>
-
+</div>
 </div>
 
 <script>
@@ -268,6 +280,14 @@ window.onload=function(){
         document.getElementById("painel").style.display="block";
         document.getElementById("usuarioLogado").innerText=usuarioAtual;
     }
+
+    // permitir enter para logar
+    document.getElementById("usuario").addEventListener("keyup", function(event){
+        if(event.key==="Enter") login();
+    });
+    document.getElementById("senha").addEventListener("keyup", function(event){
+        if(event.key==="Enter") login();
+    });
 }
 
 /* LOGIN */
