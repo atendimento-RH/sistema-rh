@@ -65,68 +65,45 @@ display:flex;
 flex-direction:column;
 align-items:center;
 padding:20px;
+position:relative;
 }
 
-/* Topbar centralizada */
-.topbar{
-width:100%;
-max-width:900px;
-background:#1e4fa3;
-color:white;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:15px 25px;
-border-radius:10px;
-box-shadow:0 6px 15px rgba(0,0,0,0.1);
-box-sizing:border-box;
-}
-
-.topbar .center{
-display:flex;
-align-items:center;
-justify-content:center;
-flex:1;
-}
-
-.topbar img{
+/* Logo canto superior */
+.logo{
+position:absolute;
+top:20px;
+left:20px;
 height:60px;
-margin-right:15px;
-border-radius:8px; /* dá aparência integrada */
-background:white;
-padding:5px;
 }
 
-.topbar h2{
-margin:0;
-font-size:22px;
-text-align:center;
-}
-
-.topbar .right{
-display:flex;
-align-items:center;
-gap:15px;
-}
-
-/* Botão sair */
-.logout{
-background:white;
-border:none;
-padding:8px 14px;
-border-radius:6px;
-cursor:pointer;
+/* Usuário logado canto superior direito */
+.userInfo{
+position:absolute;
+top:25px;
+right:20px;
 color:#1e4fa3;
 font-weight:bold;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+/* Título centralizado */
+.painelTitulo{
+text-align:center;
+color:#1e4fa3;
+font-size:28px;
+font-weight:bold;
+margin-top:20px;
+margin-bottom:30px;
 }
 
 /* Card formulário */
 .container{
 max-width:900px;
-margin:40px auto;
+width:100%;
 padding:0 20px;
-background: rgba(255,255,255,0.95);
-border-radius:10px;
+margin-bottom:40px;
 }
 
 .card{
@@ -175,7 +152,15 @@ font-weight:bold;
 .botao:hover{
 background:#163a7a;
 }
-
+.logoutBtn{
+background:#1e4fa3;
+border:none;
+color:white;
+padding:6px 12px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
 </style>
 
 </head>
@@ -198,16 +183,14 @@ background:#163a7a;
 
 <div id="painel" style="display:none">
 
-<div class="topbar">
-<div class="center">
-<img src="https://i.ibb.co/qYL7gVx8/NOMEIMAGEM.png" alt="Logo">
-<h2>Painel de Atendimentos RH</h2>
-</div>
-<div class="right">
+<img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" alt="Logo" class="logo">
+
+<div class="userInfo">
 USUÁRIO: <b id="usuarioLogado"></b>
-<button class="logout" onclick="logout()">Sair</button>
+<button class="logoutBtn" onclick="logout()">SAIR</button>
 </div>
-</div>
+
+<div class="painelTitulo">Painel de Atendimentos RH</div>
 
 <div class="container">
 <div class="card">
