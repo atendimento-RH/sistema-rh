@@ -69,13 +69,13 @@ flex:1;
 position:relative;
 }
 
-/* Topo */
+/* Topo estilo sistema */
 .header{
 position:fixed;
 top:0;
 left:0;
 width:100%;
-background:#cce0ff; /* azul claro */
+background:#1e4fa3; /* azul escuro */
 display:flex;
 align-items:center;
 justify-content:space-between;
@@ -83,6 +83,8 @@ padding:10px 25px;
 box-sizing:border-box;
 height:80px;
 z-index:1000;
+box-shadow:0 4px 12px rgba(0,0,0,0.2);
+color:white;
 }
 
 .header img{
@@ -91,22 +93,42 @@ border-radius:10px;
 box-shadow:0 3px 10px rgba(0,0,0,0.1);
 }
 
-.userInfo{
-color:#1e4fa3;
+/* Titulo central do header */
+.headerTitulo{
+position:absolute;
+left:50%;
+transform:translateX(-50%);
+font-size:24px;
 font-weight:bold;
+color:white;
+}
+
+/* Usuario logado */
+.userInfo{
 display:flex;
 align-items:center;
 gap:10px;
+background:rgba(255,255,255,0.2);
+padding:6px 12px;
+border-radius:8px;
+font-weight:bold;
+color:white;
 }
 
+/* Botão logout */
 .logoutBtn{
-background:#1e4fa3;
+background:white;
 border:none;
-color:white;
+color:#1e4fa3;
 padding:6px 12px;
 border-radius:6px;
 cursor:pointer;
 font-weight:bold;
+transition:0.2s;
+}
+
+.logoutBtn:hover{
+background:#e6e6e6;
 }
 
 /* Container centralizado */
@@ -117,15 +139,6 @@ flex-direction:column;
 align-items:center;
 justify-content:center;
 margin-top:80px; /* espaço abaixo do header */
-}
-
-/* Título centralizado */
-.painelTitulo{
-text-align:center;
-color:#1e4fa3;
-font-size:28px;
-font-weight:bold;
-margin-bottom:30px;
 }
 
 /* Card centralizado */
@@ -208,6 +221,7 @@ background:#163a7a;
 
 <div class="header">
 <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" alt="Logo">
+<div class="headerTitulo">Painel de Atendimentos RH</div>
 <div class="userInfo">
 USUÁRIO: <b id="usuarioLogado"></b>
 <button class="logoutBtn" onclick="logout()">SAIR</button>
@@ -215,8 +229,6 @@ USUÁRIO: <b id="usuarioLogado"></b>
 </div>
 
 <div class="centralContainer">
-<div class="painelTitulo">Painel de Atendimentos RH</div>
-
 <div class="container">
 <div class="card">
 <h3>Registrar Atendimento</h3>
@@ -287,6 +299,14 @@ window.onload=function(){
     });
     document.getElementById("senha").addEventListener("keyup", function(event){
         if(event.key==="Enter") login();
+    });
+
+    // permitir enter para registrar atendimento
+    const camposRegistro = ["matricula","tipo","status","descricao"];
+    camposRegistro.forEach(id=>{
+        document.getElementById(id).addEventListener("keyup", function(event){
+            if(event.key==="Enter") registrar();
+        });
     });
 }
 
