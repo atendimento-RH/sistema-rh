@@ -53,6 +53,7 @@ border:none;
 color:white;
 border-radius:6px;
 cursor:pointer;
+font-weight:bold;
 }
 
 #erro{
@@ -79,12 +80,13 @@ padding:8px 14px;
 border-radius:6px;
 cursor:pointer;
 color:#1e4fa3;
+font-weight:bold;
 }
 
 /* CONTAINER */
 
 .container{
-max-width:1100px;
+max-width:900px;
 margin:40px auto;
 padding:0 20px;
 }
@@ -96,9 +98,15 @@ border-radius:10px;
 box-shadow:0 6px 20px rgba(0,0,0,0.08);
 }
 
+.card h3{
+margin-top:0;
+color:#1e4fa3;
+}
+
 label{
 display:block;
 margin-top:15px;
+font-weight:bold;
 }
 
 input,select{
@@ -109,37 +117,24 @@ border-radius:6px;
 margin-top:5px;
 font-family:Calibri;
 box-sizing:border-box;
+font-size:15px;
 }
 
 .botao{
 margin-top:25px;
-padding:12px;
+padding:14px;
 background:#1e4fa3;
 color:white;
 border:none;
 border-radius:6px;
 cursor:pointer;
 width:100%;
+font-size:15px;
+font-weight:bold;
 }
 
-/* TABELA */
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:30px;
-}
-
-th{
-background:#1e4fa3;
-color:white;
-padding:10px;
-}
-
-td{
-padding:10px;
-border-bottom:1px solid #ddd;
-text-align:center;
+.botao:hover{
+background:#163a7a;
 }
 
 </style>
@@ -147,6 +142,8 @@ text-align:center;
 </head>
 
 <body>
+
+<!-- LOGIN -->
 
 <div id="loginContainer">
 
@@ -164,6 +161,8 @@ text-align:center;
 </div>
 
 </div>
+
+<!-- PAINEL -->
 
 <div id="painel" style="display:none">
 
@@ -208,37 +207,13 @@ Analista: <b id="usuarioLogado"></b>
 
 </div>
 
-<div class="card">
-
-<h3>Atendimentos Registrados</h3>
-
-<table id="tabela">
-
-<thead>
-
-<tr>
-<th>DATA</th>
-<th>HORA</th>
-<th>MATRÍCULA</th>
-<th>NOME</th>
-<th>TIPO</th>
-<th>DESCRIÇÃO</th>
-<th>ANALISTA</th>
-</tr>
-
-</thead>
-
-<tbody id="listaAtendimentos"></tbody>
-
-</table>
-
-</div>
-
 </div>
 
 </div>
 
 <script>
+
+/* LINKS PLANILHAS */
 
 const URL_USUARIOS="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/USUARIOS";
 const URL_BASE="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/BASE";
@@ -247,18 +222,39 @@ const API_REGISTRO="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfV
 
 let usuarios=[];
 let funcionarios=[];
-let atendimentos=[];
-
 let usuarioAtual="";
+
+/* carregar dados */
 
 async function carregar(){
 
-usuarios=await fetch(URL_USUARIOS).then(r=>r.json());
-funcionarios=await fetch(URL_BASE).then(r=>r.json());
+usuarios = await fetch(URL_USUARIOS).then(r=>r.json());
+funcionarios = await fetch(URL_BASE).then(r=>r.json());
 
 }
 
 carregar();
+
+/* manter login ao atualizar */
+
+window.onload=function(){
+
+let usuarioSalvo=localStorage.getItem("usuarioLogado");
+
+if(usuarioSalvo){
+
+usuarioAtual=usuarioSalvo;
+
+document.getElementById("loginContainer").style.display="none";
+document.getElementById("painel").style.display="block";
+
+document.getElementById("usuarioLogado").innerText=usuarioAtual;
+
+}
+
+}
+
+/* LOGIN */
 
 function login(){
 
@@ -270,6 +266,8 @@ let ok=usuarios.find(x=>x.USUARIO==u && x.SENHA==s);
 if(ok){
 
 usuarioAtual=ok.NOME;
+
+localStorage.setItem("usuarioLogado",usuarioAtual);
 
 document.getElementById("loginContainer").style.display="none";
 document.getElementById("painel").style.display="block";
@@ -284,9 +282,17 @@ document.getElementById("erro").innerText="Usuário ou senha inválidos";
 
 }
 
+/* LOGOUT */
+
 function logout(){
+
+localStorage.removeItem("usuarioLogado");
+
 location.reload();
+
 }
+
+/* BUSCAR FUNCIONARIO */
 
 function buscarFuncionario(){
 
@@ -308,25 +314,7 @@ document.getElementById("cargo").value="";
 
 }
 
-function adicionarTabela(d){
-
-let tabela=document.getElementById("listaAtendimentos");
-
-let linha=`
-<tr>
-<td>${d.data}</td>
-<td>${d.hora}</td>
-<td>${d.matricula}</td>
-<td>${d.nome}</td>
-<td>${d.tipo}</td>
-<td>${d.descricao}</td>
-<td>${d.analista}</td>
-</tr>
-`;
-
-tabela.innerHTML=linha+tabela.innerHTML;
-
-}
+/* REGISTRAR ATENDIMENTO */
 
 async function registrar(){
 
@@ -362,7 +350,9 @@ method:"POST",
 body:JSON.stringify(dados)
 });
 
-adicionarTabela(dados);
+alert("Atendimento registrado com sucesso!");
+
+/* limpar formulario */
 
 document.getElementById("matricula").value="";
 document.getElementById("nome").value="";
