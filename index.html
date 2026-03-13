@@ -12,6 +12,7 @@ font-family:Calibri;
 background:#f2f6fc;
 }
 
+/* LOGIN */
 #loginContainer{
 height:100vh;
 display:flex;
@@ -58,33 +59,57 @@ color:red;
 margin-top:10px;
 }
 
+/* PAINEL */
+#painel{
+display:flex;
+flex-direction:column;
+align-items:center;
+padding:20px;
+}
+
+/* Topbar centralizada */
 .topbar{
+width:100%;
+max-width:900px;
 background:#1e4fa3;
 color:white;
-height:70px;
 display:flex;
 align-items:center;
 justify-content:space-between;
-padding:0 20px;
+padding:15px 25px;
+border-radius:10px;
+box-shadow:0 6px 15px rgba(0,0,0,0.1);
+box-sizing:border-box;
 }
 
-.topbar .left{
+.topbar .center{
 display:flex;
 align-items:center;
+justify-content:center;
+flex:1;
 }
 
 .topbar img{
-height:50px;
+height:60px;
 margin-right:15px;
+border-radius:8px; /* dá aparência integrada */
+background:white;
+padding:5px;
 }
 
 .topbar h2{
 margin:0;
 font-size:22px;
-flex:1;
-text-align:center; /* centraliza entre a imagem e o botão */
+text-align:center;
 }
 
+.topbar .right{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+/* Botão sair */
 .logout{
 background:white;
 border:none;
@@ -93,9 +118,9 @@ border-radius:6px;
 cursor:pointer;
 color:#1e4fa3;
 font-weight:bold;
-margin-left:20px;
 }
 
+/* Card formulário */
 .container{
 max-width:900px;
 margin:40px auto;
@@ -174,11 +199,11 @@ background:#163a7a;
 <div id="painel" style="display:none">
 
 <div class="topbar">
-<div class="left">
-<img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" alt="Logo"> <!-- imagem canto esquerdo -->
+<div class="center">
+<img src="https://i.ibb.co/qYL7gVx8/NOMEIMAGEM.png" alt="Logo">
 <h2>Painel de Atendimentos RH</h2>
 </div>
-<div>
+<div class="right">
 USUÁRIO: <b id="usuarioLogado"></b>
 <button class="logout" onclick="logout()">Sair</button>
 </div>
