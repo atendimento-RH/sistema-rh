@@ -243,16 +243,31 @@ async function registrar(){
 function atualizarEstatisticas(){
     const selData=document.getElementById("calendario").value; // yyyy-mm-dd
     if(!selData) return;
-    const registrosDoDia=registros.filter(r=>{
-        let partes=r.DATA.split("/"); // dd/mm/yyyy
-        let d=partes[2]+"-"+partes[1]+"-"+partes[0]; // yyyy-mm-dd
-        return d===selData;
+
+    const registrosDoDia = registros.filter(r=>{
+        if(!r.DATA) return false;
+        let partes = r.DATA.trim().split("/"); // dd/MM/yyyy
+        if(partes.length!==3) return false;
+        let dd = partes[0].padStart(2,'0');
+        let mm = partes[1].padStart(2,'0');
+        let yyyy = partes[2];
+        let rData = `${yyyy}-${mm}-${dd}`;
+        return rData === selData;
     });
-    document.getElementById("qtdAtendimentos").innerText="Qtd de atendimentos: "+registrosDoDia.length;
-    const tipos={};
-    registrosDoDia.forEach(r=>{tipos[r.TIPO]=(tipos[r.TIPO]||0)+1;});
-    const top3=Object.entries(tipos).sort((a,b)=>b[1]-a[1]).slice(0,3).map(e=>`${e[0]} (${e[1]})`);
-    document.getElementById("topAtendimentos").innerText="Top 3 atendimentos: "+(top3.join(", ")||"-");
+
+    document.getElementById("qtdAtendimentos").innerText = "Qtd de atendimentos: " + registrosDoDia.length;
+
+    const tipos = {};
+    registrosDoDia.forEach(r => {
+        if(r.TIPO) tipos[r.TIPO] = (tipos[r.TIPO] || 0) + 1;
+    });
+
+    const top3 = Object.entries(tipos)
+        .sort((a,b)=>b[1]-a[1])
+        .slice(0,3)
+        .map(e=>`${e[0]} (${e[1]})`);
+
+    document.getElementById("topAtendimentos").innerText = "Top 3 atendimentos: " + (top3.join(", ") || "-");
 }
 </script>
 </body>
