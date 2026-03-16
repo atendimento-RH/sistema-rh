@@ -4,207 +4,34 @@
 <meta charset="UTF-8">
 <title>Painel de Atendimentos RH</title>
 <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/1/1a/Logomarca_da_Prefeitura_do_Rio_de_Janeiro_na_vertical_lan%C3%A7ada_em_2025.png">
+
 <style>
-body{
-  margin:0;
-  font-family:Calibri;
-  background:#f2f6fc;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-/* LOGIN */
-#loginContainer{
-  height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.loginBox{
-  background:white;
-  padding:50px;
-  border-radius:10px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.15);
-  width:350px;
-  text-align:center;
-}
-.loginBox input{
-  width:100%;
-  padding:12px;
-  margin-top:12px;
-  border:1px solid #ccc;
-  border-radius:6px;
-}
-.loginBtn{
-  margin-top:20px;
-  width:100%;
-  padding:12px;
-  background:#1e4fa3;
-  border:none;
-  color:white;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-/* PAINEL */
-#painel{
-  display:none;
-  flex:1;
-}
-
-/* HEADER */
-.header{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  background:#1e4fa3;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 25px;
-  height:80px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
-  color:white;
-  box-sizing:border-box;
-}
-.header img{
-  height:60px;
-  border-radius:10px;
-}
-.headerTitulo{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:24px;
-  font-weight:bold;
-}
-.userInfo{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.logoutBtn{
-  background:white;
-  border:none;
-  color:#1e4fa3;
-  padding:6px 12px;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-/* MENU */
-.menu{
-  margin-top:100px;
-  display:flex;
-  justify-content:center;
-  gap:15px;
-}
-.menu button{
-  padding:12px 28px;
-  border:none;
-  background:#1e4fa3;
-  color:white;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-  font-size:15px;
-}
-.menu button:hover{
-  background:#163c7d;
-}
-
-/* CONTAINERS */
-.centralContainer{
-  display:flex;
-  justify-content:center;
-  margin-top:30px;
-}
-.container{
-  max-width:700px;
-  width:100%;
-}
-.card{
-  background:white;
-  padding:35px;
-  border-radius:10px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.08);
-}
-label{
-  display:block;
-  margin-top:15px;
-  font-weight:bold;
-}
-input,select{
-  width:100%;
-  padding:12px;
-  border:1px solid #ccc;
-  border-radius:6px;
-  margin-top:5px;
-  font-family:Calibri;
-}
-.botao{
-  margin-top:25px;
-  padding:14px;
-  background:#1e4fa3;
-  color:white;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  width:100%;
-  font-weight:bold;
-}
-
-/* DASHBOARD */
-.cardsDash{
-  display:flex;
-  flex-wrap:wrap;
-  gap:20px;
-  justify-content:center;
-  margin-top:20px;
-}
-.cardDash{
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.08);
-  text-align:center;
-  width:150px;
-  cursor:pointer;
-}
-.cardDash h2{
-  margin:0;
-  color:#1e4fa3;
-  font-size:32px;
-}
-.tipoLinha,.rankingLinha{
-  display:flex;
-  justify-content:space-between;
-  padding:10px;
-  border-bottom:1px solid #eee;
-}
-
-/* NOTIFICAÇÃO */
-#notificacao{
-  position:fixed;
-  top:-80px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#1e4fa3;
-  color:white;
-  padding:16px 30px;
-  border-radius:10px;
-  font-weight:bold;
-  box-shadow:0 8px 25px rgba(0,0,0,0.2);
-  transition:all .4s ease;
-  z-index:9999;
-}
-#notificacao.show{
-  top:20px;
-}
+body{margin:0;font-family:Calibri;background:#f2f6fc;height:100vh;display:flex;flex-direction:column;}
+#loginContainer{height:100vh;display:flex;align-items:center;justify-content:center;}
+.loginBox{background:white;padding:50px;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,0.15);width:350px;text-align:center;}
+.loginBox input{width:100%;padding:12px;margin-top:12px;border:1px solid #ccc;border-radius:6px;}
+.loginBtn{margin-top:20px;width:100%;padding:12px;background:#1e4fa3;border:none;color:white;border-radius:6px;cursor:pointer;font-weight:bold;}
+#painel{display:none;flex:1;}
+.header{position:fixed;top:0;left:0;width:100%;background:#1e4fa3;display:flex;align-items:center;justify-content:space-between;padding:10px 25px;height:80px;box-shadow:0 4px 12px rgba(0,0,0,0.2);color:white;box-sizing:border-box;}
+.header img{height:60px;border-radius:10px;}
+.headerTitulo{position:absolute;left:50%;transform:translateX(-50%);font-size:24px;font-weight:bold;}
+.userInfo{display:flex;align-items:center;gap:10px;}
+.logoutBtn{background:white;border:none;color:#1e4fa3;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;}
+.menu{margin-top:100px;display:flex;justify-content:center;gap:15px;}
+.menu button{padding:12px 28px;border:none;background:#1e4fa3;color:white;border-radius:8px;cursor:pointer;font-weight:bold;font-size:15px;}
+.menu button:hover{background:#163c7d;}
+.centralContainer{display:flex;justify-content:center;margin-top:30px;}
+.container{max-width:700px;width:100%;}
+.card{background:white;padding:35px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);}
+label{display:block;margin-top:15px;font-weight:bold;}
+input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;margin-top:5px;font-family:Calibri;}
+.botao{margin-top:25px;padding:14px;background:#1e4fa3;color:white;border:none;border-radius:6px;cursor:pointer;width:100%;font-weight:bold;}
+.cardsDash{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:20px;}
+.cardDash{background:white;padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);text-align:center;width:150px;cursor:pointer;}
+.cardDash h2{margin:0;color:#1e4fa3;font-size:32px;}
+.tipoLinha,.rankingLinha{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;}
+#notificacao{position:fixed;top:-80px;left:50%;transform:translateX(-50%);background:#1e4fa3;color:white;padding:16px 30px;border-radius:10px;font-weight:bold;box-shadow:0 8px 25px rgba(0,0,0,0.2);transition:all .4s ease;z-index:9999;}
+#notificacao.show{top:20px;}
 </style>
 </head>
 <body>
@@ -222,113 +49,92 @@ input,select{
 
 <!-- PAINEL -->
 <div id="painel">
-
-<div class="header">
-  <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg">
-  <div class="headerTitulo">Painel de Atendimentos RH</div>
-  <div class="userInfo">
-    USUÁRIO: <b id="usuarioLogado"></b>
-    <button class="logoutBtn" onclick="logout()">SAIR</button>
-  </div>
-</div>
-
-<!-- MENU -->
-<div class="menu">
-  <button onclick="mostrarTela('registro')">Registrar Atendimento</button>
-  <button onclick="mostrarTela('dashboard')">Dashboard</button>
-</div>
-
-<!-- REGISTRO -->
-<div id="telaRegistro" class="centralContainer">
-  <div class="container">
-    <div class="card">
-      <h3>Registrar Atendimento</h3>
-
-      <label>Matrícula *</label>
-      <input id="matricula" oninput="buscarFuncionario()">
-
-      <label>Nome</label>
-      <input id="nome" readonly>
-
-      <label>Cargo</label>
-      <input id="cargo" readonly>
-
-      <label>Tipo de Atendimento *</label>
-      <select id="tipo">
-        <option value="">-- selecione --</option>
-        <option>ACERTO SALARIAL</option>
-        <option>CADASTRO</option>
-        <option>ATESTADO</option>
-        <option>BENEFÍCIOS</option>
-        <option>DESLIGAMENTO</option>
-        <option>PONTO</option>
-        <option>FÉRIAS</option>
-        <option>OUTROS</option>
-      </select>
-
-      <label>Status *</label>
-      <select id="status">
-        <option value="">-- selecione --</option>
-        <option>PENDENTE</option>
-        <option>RESOLVIDO</option>
-      </select>
-
-      <label>Descrição *</label>
-      <input id="descricao">
-
-      <button class="botao" id="registrarBtn" onclick="registrar()">Registrar Atendimento</button>
+  <div class="header">
+    <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg">
+    <div class="headerTitulo">Painel de Atendimentos RH</div>
+    <div class="userInfo">
+      USUÁRIO: <b id="usuarioLogado"></b>
+      <button class="logoutBtn" onclick="logout()">SAIR</button>
     </div>
   </div>
-</div>
 
-<!-- DASHBOARD -->
-<div id="telaDashboard" class="centralContainer" style="display:none">
-  <div class="container">
+  <!-- MENU -->
+  <div class="menu">
+    <button onclick="mostrarTela('registro')">Registrar Atendimento</button>
+    <button onclick="mostrarTela('dashboard')">Dashboard</button>
+  </div>
 
-    <div class="card">
-      <h3>Dashboard</h3>
-      <div class="cardsDash">
-        <div class="cardDash" onclick="filtrarPeriodo('hoje')">
-          <h2 id="dashHoje">0</h2>Hoje
-        </div>
-        <div class="cardDash" onclick="filtrarPeriodo('semana')">
-          <h2 id="dashSemana">0</h2>Semana
-        </div>
-        <div class="cardDash" onclick="filtrarPeriodo('mes')">
-          <h2 id="dashMes">0</h2>Mês
-        </div>
-        <div class="cardDash" onclick="filtrarPeriodo('pendentes')">
-          <h2 id="dashPendentes">0</h2>Pendentes
-        </div>
-        <div class="cardDash" onclick="filtrarPeriodo('total')">
-          <h2 id="dashTotal">0</h2>Total
-        </div>
+  <!-- REGISTRO -->
+  <div id="telaRegistro" class="centralContainer">
+    <div class="container">
+      <div class="card">
+        <h3>Registrar Atendimento</h3>
+        <label>Matrícula *</label>
+        <input id="matricula" oninput="buscarFuncionario()">
+        <label>Nome</label>
+        <input id="nome" readonly>
+        <label>Cargo</label>
+        <input id="cargo" readonly>
+        <label>Tipo de Atendimento *</label>
+        <select id="tipo">
+          <option value="">-- selecione --</option>
+          <option>ACERTO SALARIAL</option>
+          <option>CADASTRO</option>
+          <option>ATESTADO</option>
+          <option>BENEFÍCIOS</option>
+          <option>DESLIGAMENTO</option>
+          <option>PONTO</option>
+          <option>FÉRIAS</option>
+          <option>OUTROS</option>
+        </select>
+        <label>Status *</label>
+        <select id="status">
+          <option value="">-- selecione --</option>
+          <option>PENDENTE</option>
+          <option>RESOLVIDO</option>
+        </select>
+        <label>Descrição *</label>
+        <input id="descricao">
+        <button class="botao" id="registrarBtn" onclick="registrar()">Registrar Atendimento</button>
       </div>
-      <br>
-      <label>Consultar por Data</label>
-      <input type="date" id="filtroData">
-      <button class="botao" onclick="filtrarPeriodo('data')">Consultar</button>
     </div>
-
-    <div class="card" style="margin-top:25px">
-      <h3>Tipos de Atendimento</h3>
-      <div id="tiposContainer"></div>
-    </div>
-
-    <div class="card" style="margin-top:25px">
-      <h3>Ranking de Analistas</h3>
-      <div id="rankingContainer"></div>
-    </div>
-
   </div>
-</div>
 
+  <!-- DASHBOARD -->
+  <div id="telaDashboard" class="centralContainer" style="display:none">
+    <div class="container">
+      <div class="card">
+        <h3>Dashboard</h3>
+        <div class="cardsDash">
+          <div class="cardDash" onclick="filtrarPeriodo('hoje')"><h2 id="dashHoje">0</h2>Hoje</div>
+          <div class="cardDash" onclick="filtrarPeriodo('semana')"><h2 id="dashSemana">0</h2>Semana</div>
+          <div class="cardDash" onclick="filtrarPeriodo('mes')"><h2 id="dashMes">0</h2>Mês</div>
+          <div class="cardDash" onclick="filtrarPeriodo('pendentes')"><h2 id="dashPendentes">0</h2>Pendentes</div>
+          <div class="cardDash" onclick="filtrarPeriodo('total')"><h2 id="dashTotal">0</h2>Total</div>
+        </div>
+        <br>
+        <label>Consultar por Data</label>
+        <input type="date" id="filtroData">
+        <button class="botao" onclick="filtrarPeriodo('data')">Consultar</button>
+      </div>
+
+      <div class="card" style="margin-top:25px">
+        <h3>Tipos de Atendimento</h3>
+        <div id="tiposContainer"></div>
+      </div>
+
+      <div class="card" style="margin-top:25px">
+        <h3>Ranking de Analistas</h3>
+        <div id="rankingContainer"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="notificacao"></div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec"
+const API="https://script.google.com/macros/s/SEU_SCRIPT_ID/exec";
 let usuarios=[], funcionarios=[], registros=[], usuarioAtual="";
 
 /* CARREGAR DADOS */
@@ -336,7 +142,7 @@ async function carregar(){
   usuarios = await fetch(API+"?acao=usuarios").then(r=>r.json());
   funcionarios = await fetch(API+"?acao=base").then(r=>r.json());
   registros = await fetch(API+"?acao=registros").then(r=>r.json());
-  calcularDashboard();
+  atualizarDashboard(registros);
 }
 
 /* MANTER LOGIN */
@@ -349,14 +155,6 @@ window.onload=function(){
     document.getElementById("usuarioLogado").innerText=u;
   }
 }
-
-/* ENTER login ou registrar */
-document.addEventListener("keydown",function(e){
-  if(e.key==="Enter"){
-    if(document.getElementById("loginContainer").style.display!="none") login();
-    else if(document.getElementById("telaRegistro").style.display!="none") registrar();
-  }
-})
 
 /* TROCAR TELAS */
 function mostrarTela(tela){
@@ -393,12 +191,17 @@ function logout(){
 function buscarFuncionario(){
   let mat=document.getElementById("matricula").value.trim();
   let f=funcionarios.find(x=>x.MATRICULA==mat);
-  document.getElementById("nome").value=f ? f.NOME : "";
-  document.getElementById("cargo").value=f ? f.CARGO : "";
+  if(f){
+    document.getElementById("nome").value=f.NOME;
+    document.getElementById("cargo").value=f.CARGO;
+  }else{
+    document.getElementById("nome").value="";
+    document.getElementById("cargo").value="";
+  }
 }
 
-/* REGISTRAR ATENDIMENTO */
-function registrar(){
+/* REGISTRAR */
+async function registrar(){
   let matricula=document.getElementById("matricula").value;
   let nome=document.getElementById("nome").value;
   let cargo=document.getElementById("cargo").value;
@@ -406,116 +209,120 @@ function registrar(){
   let status=document.getElementById("status").value;
   let descricao=document.getElementById("descricao").value;
 
-  if(!matricula || !tipo || !status || !descricao){
+  if(!matricula||!tipo||!status||!descricao){
     mostrarNotificacao("Preencha os campos obrigatórios","#d93025");
     return;
   }
 
-  let btn=document.getElementById("registrarBtn");
+  let btn = document.getElementById("registrarBtn");
   btn.disabled=true;
   btn.innerText="Registrando...";
 
-  fetch(API, {
-    method:"POST",
-    body:JSON.stringify({ matricula,nome,cargo,tipo,status,descricao,analista:usuarioAtual })
-  })
-  .then(res=>{
-    if(res.ok){
+  try{
+    let res = await fetch(API,{
+      method:"POST",
+      body:JSON.stringify({matricula,nome,cargo,tipo,status,descricao,analista:usuarioAtual})
+    });
+    let data = await res.json();
+    if(data && data.ok){
+      mostrarNotificacao("Atendimento registrado com sucesso");
       document.getElementById("matricula").value="";
       document.getElementById("nome").value="";
       document.getElementById("cargo").value="";
       document.getElementById("tipo").value="";
       document.getElementById("status").value="";
       document.getElementById("descricao").value="";
-      btn.disabled=false;
-      btn.innerText="Registrar Atendimento";
-      mostrarNotificacao("Atendimento registrado com sucesso");
-      carregar();
-    } else {
-      mostrarNotificacao("Erro ao registrar atendimento","#d93025");
+    }else{
+      mostrarNotificacao("Erro ao registrar","#d93025");
+      btn.innerText="Registrando...";
+      return;
     }
-  })
-  .catch(()=>{
-    mostrarNotificacao("Erro ao registrar atendimento","#d93025");
-  });
+  }catch(e){
+    mostrarNotificacao("Erro ao registrar","#d93025");
+    btn.innerText="Registrando...";
+    return;
+  }
+
+  btn.disabled=false;
+  btn.innerText="Registrar Atendimento";
+  carregar();
 }
 
-/* DASHBOARD */
-function calcularDashboard(){
-  let hoje=new Date();
-  let pendentes = registros.filter(r=>r.STATUS && r.STATUS.trim().toUpperCase()==="PENDENTE");
-  document.getElementById("dashPendentes").innerText=pendentes.length;
-  document.getElementById("dashTotal").innerText=registros.length;
+/* UTILS */
+function parseData(d){ // yyyy/mm/dd
+  if(!d) return null;
+  let p=d.split("/");
+  if(p.length==3) return new Date(p[0],p[1]-1,p[2]);
+  return new Date(d);
+}
 
-  let registrosHoje = registros.filter(r=>{
+/* ATUALIZAR DASHBOARD */
+function atualizarDashboard(lista){
+  let hoje = new Date();
+  document.getElementById("dashHoje").innerText = lista.filter(r=>r.DATA===formatData(hoje)).length;
+  document.getElementById("dashSemana").innerText = lista.filter(r=>{
     if(!r.DATA) return false;
-    return new Date(r.DATA) >= new Date(hoje.toDateString()) && new Date(r.DATA) < new Date(hoje.getTime()+24*60*60*1000);
-  });
-  document.getElementById("dashHoje").innerText=registrosHoje.length;
+    let dt = new Date(r.DATA);
+    return dt >= new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()-7);
+  }).length;
+  document.getElementById("dashMes").innerText = lista.filter(r=>{
+    if(!r.DATA) return false;
+    let dt = new Date(r.DATA);
+    return dt.getMonth()===hoje.getMonth() && dt.getFullYear()===hoje.getFullYear();
+  }).length;
+  document.getElementById("dashPendentes").innerText = lista.filter(r=>r.STATUS==="PENDENTE").length;
+  document.getElementById("dashTotal").innerText = lista.length;
 
-  let semana=new Date(); semana.setDate(semana.getDate()-7);
-  let registrosSemana=registros.filter(r=>r.DATA && new Date(r.DATA) >= semana);
-  document.getElementById("dashSemana").innerText=registrosSemana.length;
-
-  let mesAtual=hoje.getMonth(), anoAtual=hoje.getFullYear();
-  let registrosMes=registros.filter(r=>r.DATA && new Date(r.DATA).getMonth()===mesAtual && new Date(r.DATA).getFullYear()===anoAtual);
-  document.getElementById("dashMes").innerText=registrosMes.length;
-
-  mostrarTipos(registros);
-  mostrarRanking(registros);
-}
-
-/* FILTRO POR PERIODO */
-function filtrarPeriodo(tipo){
-  let lista=[...registros];
-  if(tipo==="pendentes") lista = registros.filter(r=>r.STATUS && r.STATUS.trim().toUpperCase()==="PENDENTE");
-  if(tipo==="hoje") lista = registros.filter(r=>r.DATA && new Date(r.DATA).toDateString() === new Date().toDateString());
-  if(tipo==="semana"){
-    let semana=new Date(); semana.setDate(semana.getDate()-7);
-    lista=registros.filter(r=>r.DATA && new Date(r.DATA) >= semana);
-  }
-  if(tipo==="mes"){
-    let hoje=new Date();
-    lista=registros.filter(r=>r.DATA && new Date(r.DATA).getMonth()===hoje.getMonth() && new Date(r.DATA).getFullYear()===hoje.getFullYear());
-  }
-  if(tipo==="total") lista=[...registros];
-  if(tipo==="data"){
-    let d=document.getElementById("filtroData").value;
-    if(!d){ mostrarNotificacao("Selecione uma data","#d93025"); return; }
-    let dataFiltro=new Date(d);
-    lista=registros.filter(r=>r.DATA && new Date(r.DATA).toDateString()===dataFiltro.toDateString());
-  }
   mostrarTipos(lista);
   mostrarRanking(lista);
 }
 
-/* TIPOS DE ATENDIMENTO */
+/* FORMATO yyyy/mm/dd */
+function formatData(d){ 
+  return `${d.getFullYear()}/${("0"+(d.getMonth()+1)).slice(-2)}/${("0"+d.getDate()).slice(-2)}`;
+}
+
+/* FILTRAGEM */
+function filtrarPeriodo(tipo){
+  let lista=[...registros];
+  let hoje=new Date();
+  if(tipo==="pendentes") lista = lista.filter(r=>r.STATUS==="PENDENTE");
+  if(tipo==="hoje") lista = lista.filter(r=>r.DATA===formatData(hoje));
+  if(tipo==="semana") lista = lista.filter(r=>{
+    if(!r.DATA) return false;
+    let dt=new Date(r.DATA);
+    return dt >= new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()-7);
+  });
+  if(tipo==="mes") lista = lista.filter(r=>{
+    if(!r.DATA) return false;
+    let dt=new Date(r.DATA);
+    return dt.getMonth()===hoje.getMonth() && dt.getFullYear()===hoje.getFullYear();
+  });
+  if(tipo==="data"){
+    let d=document.getElementById("filtroData").value;
+    if(!d){ mostrarNotificacao("Selecione uma data","#d93025"); return; }
+    let dt = new Date(d);
+    let str=formatData(dt);
+    lista = lista.filter(r=>r.DATA===str);
+  }
+  atualizarDashboard(lista);
+}
+
+/* LISTAGEM TIPOS */
 function mostrarTipos(lista){
   let tipos={};
-  lista.forEach(r=>{
-    let t = r.TIPO ? r.TIPO.trim() : "OUTROS";
-    if(!tipos[t]) tipos[t]=0;
-    tipos[t]++;
-  });
+  lista.forEach(r=>{let t=r.TIPO||"OUTROS"; tipos[t] = (tipos[t]||0)+1; });
   let html="";
-  for(let t in tipos){
-    html+=`<div class="tipoLinha"><span>${t}</span><span>${tipos[t]}</span></div>`;
-  }
-  document.getElementById("tiposContainer").innerHTML=html;
+  for(let t in tipos) html+=`<div class="tipoLinha"><span>${t}</span><span>${tipos[t]}</span></div>`;
+  document.getElementById("tiposContainer").innerHTML = html;
 }
 
 /* RANKING */
 function mostrarRanking(lista){
   let ranking={};
-  lista.forEach(r=>{
-    let a=r.ANALISTA ? r.ANALISTA.trim() : "SEM ANALISTA";
-    if(!ranking[a]) ranking[a]=0;
-    ranking[a]++;
-  });
+  lista.forEach(r=>{let a=r.ANALISTA||"SEM ANALISTA"; ranking[a]=(ranking[a]||0)+1; });
   let html="";
-  for(let a in ranking){
-    html+=`<div class="rankingLinha"><span>${a}</span><span>${ranking[a]}</span></div>`;
-  }
+  for(let a in ranking) html+=`<div class="rankingLinha"><span>${a}</span><span>${ranking[a]}</span></div>`;
   document.getElementById("rankingContainer").innerHTML=html;
 }
 
@@ -525,10 +332,9 @@ function mostrarNotificacao(msg,cor="#1e4fa3"){
   n.innerText=msg;
   n.style.background=cor;
   n.classList.add("show");
-  setTimeout(()=>{ n.classList.remove("show"); },3000);
+  setTimeout(()=>n.classList.remove("show"),3000);
 }
 
-/* CARREGAR INICIAL */
 carregar();
 </script>
 </body>
