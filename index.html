@@ -530,7 +530,15 @@ document.getElementById("registrarBtn").innerText="Registrar Atendimento"
 document.getElementById("descricao").value=""
 
 mostrarNotificacao("Atendimento registrado com sucesso")
+document.getElementById("matricula").value=""
+document.getElementById("nome").value=""
+document.getElementById("cargo").value=""
+document.getElementById("tipo").value=""
+document.getElementById("status").value=""
+document.getElementById("descricao").value=""
 
+document.getElementById("matricula").focus()
+  
 carregar()
 
 }
@@ -672,6 +680,86 @@ n.style.display="none"
 },3000)
 
 }
+
+  function filtrarPeriodo(tipo){
+
+let lista = [...registros]
+
+let hoje = new Date().toLocaleDateString()
+
+if(tipo=="hoje"){
+
+lista = registros.filter(r => r.DATA == hoje)
+
+}
+
+if(tipo=="semana"){
+
+let semana = new Date()
+semana.setDate(semana.getDate()-7)
+
+lista = registros.filter(r=>{
+
+let p=r.DATA.split("/")
+let data=new Date(p[2],p[1]-1,p[0])
+
+return data>=semana
+
+})
+
+}
+
+if(tipo=="mes"){
+
+let mesAtual=new Date().getMonth()
+
+lista = registros.filter(r=>{
+
+let p=r.DATA.split("/")
+let data=new Date(p[2],p[1]-1,p[0])
+
+return data.getMonth()==mesAtual
+
+})
+
+}
+
+if(tipo=="pendentes"){
+
+lista = registros.filter(r=>r.STATUS=="PENDENTE")
+
+}
+
+if(tipo=="data"){
+
+let d=document.getElementById("filtroData").value
+
+if(!d) return
+
+let dataFormatada=new Date(d).toLocaleDateString()
+
+lista = registros.filter(r=>r.DATA==dataFormatada)
+
+}
+
+mostrarTipos(lista)
+mostrarRanking(lista)
+
+}
+
+document.addEventListener("keypress",function(e){
+
+if(e.key==="Enter"){
+
+let telaRegistro = document.getElementById("telaRegistro")
+
+if(telaRegistro.style.display!="none"){
+registrar()
+}
+
+}
+
+})
 
 </script>
 
