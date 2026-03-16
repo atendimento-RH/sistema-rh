@@ -418,6 +418,8 @@ calcularDashboard()
 
 carregar()
 
+/* autopreenchimento */
+
 function buscarFuncionario(){
 
 let mat = document.getElementById("matricula").value.trim()
@@ -464,7 +466,75 @@ document.getElementById("erro").innerText="Usuário ou senha inválidos"
 
 }
 
-  
+/* login com ENTER */
+
+document.addEventListener("keypress",function(e){
+
+if(e.key==="Enter" && document.getElementById("loginContainer").style.display!="none"){
+
+login()
+
+}
+
+})
+
+/* LOGOUT */
+
+function logout(){
+
+document.getElementById("painel").style.display="none"
+document.getElementById("loginContainer").style.display="flex"
+
+document.getElementById("usuario").value=""
+document.getElementById("senha").value=""
+
+}
+
+/* registrar atendimento */
+
+async function registrar(){
+
+let matricula=document.getElementById("matricula").value
+let nome=document.getElementById("nome").value
+let cargo=document.getElementById("cargo").value
+let tipo=document.getElementById("tipo").value
+let status=document.getElementById("status").value
+let descricao=document.getElementById("descricao").value
+
+if(!matricula || !tipo || !status || !descricao){
+
+alert("Preencha os campos obrigatórios")
+return
+
+}
+
+document.getElementById("registrarBtn").disabled=true
+document.getElementById("registrarBtn").innerText="Registrando..."
+
+await fetch(API,{
+method:"POST",
+body:JSON.stringify({
+matricula,
+nome,
+cargo,
+tipo,
+status,
+descricao,
+analista:usuarioAtual
+})
+})
+
+document.getElementById("registrarBtn").disabled=false
+document.getElementById("registrarBtn").innerText="Registrar Atendimento"
+
+document.getElementById("descricao").value=""
+
+mostrarNotificacao("Atendimento registrado com sucesso")
+
+carregar()
+
+}
+
 /* trocar tela */
 
 function mostrarTela(t){
@@ -583,6 +653,23 @@ html+=`<div class="rankingLinha"><span>${x[0]}</span><span>${x[1]}</span></div>`
 })
 
 document.getElementById("rankingContainer").innerHTML=html
+
+}
+
+/* notificação */
+
+function mostrarNotificacao(msg){
+
+let n=document.getElementById("notificacao")
+
+n.innerText=msg
+n.style.display="block"
+
+setTimeout(()=>{
+
+n.style.display="none"
+
+},3000)
 
 }
 
