@@ -9,6 +9,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
 body{
 margin:0;
 font-family:Calibri;
@@ -19,6 +20,7 @@ flex-direction:column;
 }
 
 /* LOGIN */
+
 #loginContainer{
 height:100vh;
 display:flex;
@@ -56,12 +58,14 @@ font-weight:bold;
 }
 
 /* PAINEL */
+
 #painel{
 display:none;
 flex:1;
 }
 
 /* HEADER */
+
 .header{
 position:fixed;
 top:0;
@@ -108,6 +112,7 @@ font-weight:bold;
 }
 
 /* MENU */
+
 .menu{
 margin-top:100px;
 display:flex;
@@ -131,6 +136,7 @@ background:#163c7d;
 }
 
 /* CONTAINERS */
+
 .centralContainer{
 display:flex;
 justify-content:center;
@@ -177,6 +183,7 @@ font-weight:bold;
 }
 
 /* DASHBOARD */
+
 .cardsDash{
 display:flex;
 flex-wrap:wrap;
@@ -208,7 +215,14 @@ padding:10px;
 border-bottom:1px solid #eee;
 }
 
+/* GRÁFICO */
+
+#graficoTipos {
+    height: 300px; /* Altura fixa para não explodir */
+}
+
 /* NOTIFICAÇÃO */
+
 #notificacao{
 position:fixed;
 top:-80px;
@@ -234,6 +248,7 @@ top:20px;
 <body>
 
 <!-- LOGIN -->
+
 <div id="loginContainer">
 <div class="loginBox">
 <h2>Sistema RH</h2>
@@ -245,37 +260,50 @@ top:20px;
 </div>
 
 <!-- PAINEL -->
+
 <div id="painel">
 
 <div class="header">
+
 <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg">
+
 <div class="headerTitulo">Painel de Atendimentos RH</div>
+
 <div class="userInfo">
 USUÁRIO: <b id="usuarioLogado"></b>
 <button class="logoutBtn" onclick="logout()">SAIR</button>
 </div>
+
 </div>
 
 <!-- MENU -->
+
 <div class="menu">
 <button onclick="mostrarTela('registro')">Registrar Atendimento</button>
 <button onclick="mostrarTela('dashboard')">Dashboard</button>
 </div>
 
 <!-- REGISTRO -->
+
 <div id="telaRegistro" class="centralContainer">
+
 <div class="container">
+
 <div class="card">
+
 <h3>Registrar Atendimento</h3>
 
 <label>Matrícula *</label>
 <input id="matricula" oninput="buscarFuncionario()">
+
 <label>Nome</label>
 <input id="nome" readonly>
+
 <label>Cargo</label>
 <input id="cargo" readonly>
 
 <label>Tipo de Atendimento *</label>
+
 <select id="tipo">
 <option value="">-- selecione --</option>
 <option>ACERTO SALARIAL</option>
@@ -289,6 +317,7 @@ USUÁRIO: <b id="usuarioLogado"></b>
 </select>
 
 <label>Status *</label>
+
 <select id="status">
 <option value="">-- selecione --</option>
 <option>PENDENTE</option>
@@ -297,6 +326,7 @@ USUÁRIO: <b id="usuarioLogado"></b>
 
 <label>Descrição *</label>
 <input id="descricao">
+
 <button class="botao" id="registrarBtn" onclick="registrar()">Registrar Atendimento</button>
 
 </div>
@@ -304,42 +334,79 @@ USUÁRIO: <b id="usuarioLogado"></b>
 </div>
 
 <!-- DASHBOARD -->
+
 <div id="telaDashboard" class="centralContainer" style="display:none">
+
 <div class="container">
 
 <div class="card">
+
 <h3>Dashboard</h3>
+
 <div class="cardsDash">
-<div class="cardDash" onclick="filtrarPeriodo('hoje')"><h2 id="dashHoje">0</h2>Hoje</div>
-<div class="cardDash" onclick="filtrarPeriodo('semana')"><h2 id="dashSemana">0</h2>Semana</div>
-<div class="cardDash" onclick="filtrarPeriodo('mes')"><h2 id="dashMes">0</h2>Mês</div>
-<div class="cardDash" onclick="filtrarPeriodo('pendentes')"><h2 id="dashPendentes">0</h2>Pendentes</div>
-<div class="cardDash" onclick="filtrarPeriodo('total')"><h2 id="dashTotal">0</h2>Total</div>
+
+<div class="cardDash" onclick="filtrarPeriodo('hoje')">
+<h2 id="dashHoje">0</h2>
+Hoje
+</div>
+
+<div class="cardDash" onclick="filtrarPeriodo('semana')">
+<h2 id="dashSemana">0</h2>
+Semana
+</div>
+
+<div class="cardDash" onclick="filtrarPeriodo('mes')">
+<h2 id="dashMes">0</h2>
+Mês
+</div>
+
+<div class="cardDash" onclick="filtrarPeriodo('pendentes')">
+<h2 id="dashPendentes">0</h2>
+Pendentes
+</div>
+
+<div class="cardDash" onclick="filtrarPeriodo('total')">
+<h2 id="dashTotal">0</h2>
+Total
+</div>
+
 </div>
 
 <br>
+
 <label>Consultar por Data</label>
 <input type="date" id="filtroData">
 <button class="botao" onclick="filtrarPeriodo('data')">Consultar</button>
+
 </div>
 
 <div class="card" style="margin-top:25px">
+
 <h3>Tipos de Atendimento</h3>
+
 <div id="tiposContainer"></div>
+
 </div>
 
 <div class="card" style="margin-top:25px">
+
 <h3>Gráfico</h3>
-<canvas id="graficoTipos" style="height:300px;"></canvas>
+
+<canvas id="graficoTipos"></canvas>
+
 </div>
 
 <div class="card" style="margin-top:25px">
+
 <h3>Ranking de Analistas</h3>
+
 <div id="rankingContainer"></div>
+
 </div>
 
 </div>
 </div>
+
 </div>
 
 <div id="notificacao"></div>
@@ -347,7 +414,12 @@ USUÁRIO: <b id="usuarioLogado"></b>
 <script>
 
 const API="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec"
-let usuarios=[], funcionarios=[], registros=[], graficoTipos=null, usuarioAtual="";
+
+let usuarios=[]
+let funcionarios=[]
+let registros=[]
+let graficoTipos=null
+let usuarioAtual=""
 
 /* carregar dados */
 async function carregar(){
@@ -356,7 +428,6 @@ async function carregar(){
     registros = await fetch(API+"?acao=registros").then(r=>r.json())
     calcularDashboard()
 }
-carregar()
 
 /* manter login */
 window.onload=function(){
@@ -441,36 +512,40 @@ async function registrar(){
     })
     document.getElementById("registrarBtn").disabled=false
     document.getElementById("registrarBtn").innerText="Registrar Atendimento"
-    document.getElementById("matricula").value=""
-    document.getElementById("nome").value=""
-    document.getElementById("cargo").value=""
-    document.getElementById("tipo").value=""
-    document.getElementById("status").value=""
-    document.getElementById("descricao").value=""
+    // limpar campos
+    ["matricula","nome","cargo","tipo","status","descricao"].forEach(id=>document.getElementById(id).value="")
     document.getElementById("matricula").focus()
     mostrarNotificacao("Atendimento registrado com sucesso")
     carregar()
 }
 
-/* DASHBOARD */
+/* DASHBOARD - CARDS, TIPOS E RANKING */
 function calcularDashboard(){
-    const hoje = new Date().toISOString().slice(0,10)
-    let registrosHoje = registros.filter(r=>r.DATA===hoje)
-    document.getElementById("dashHoje").innerText = registrosHoje.length
-
-    const semana = new Date()
-    semana.setDate(semana.getDate()-7)
-    let registrosSemana = registros.filter(r=>r.DATA >= semana.toISOString().slice(0,10))
-    document.getElementById("dashSemana").innerText = registrosSemana.length
-
-    let [anoAtual, mesAtual] = hoje.split("-").map(Number)
-    let registrosMes = registros.filter(r=>{
-        let [ano, mes] = r.DATA.split("-").map(Number)
-        return ano===anoAtual && mes===mesAtual
+    let hoje = new Date()
+    let registrosHoje = registros.filter(r => {
+        if(!r.DATA) return false
+        let d = new Date(r.DATA)
+        return d.toDateString() === hoje.toDateString()
     })
-    document.getElementById("dashMes").innerText = registrosMes.length
+    let semana = new Date()
+    semana.setDate(semana.getDate()-7)
+    let registrosSemana = registros.filter(r=>{
+        if(!r.DATA) return false
+        let d = new Date(r.DATA)
+        return d >= semana
+    })
+    let mesAtual = hoje.getMonth()
+    let anoAtual = hoje.getFullYear()
+    let registrosMes = registros.filter(r=>{
+        if(!r.DATA) return false
+        let d = new Date(r.DATA)
+        return d.getMonth() === mesAtual && d.getFullYear() === anoAtual
+    })
+    let pendentes = registros.filter(r => r.STATUS && r.STATUS.trim().toUpperCase()==="PENDENTE")
 
-    let pendentes = registros.filter(r=>r.STATUS==="PENDENTE")
+    document.getElementById("dashHoje").innerText = registrosHoje.length
+    document.getElementById("dashSemana").innerText = registrosSemana.length
+    document.getElementById("dashMes").innerText = registrosMes.length
     document.getElementById("dashPendentes").innerText = pendentes.length
     document.getElementById("dashTotal").innerText = registros.length
 
@@ -478,39 +553,61 @@ function calcularDashboard(){
     mostrarRanking(registros)
 }
 
-/* FILTRO POR DATA */
+/* FILTRO POR PERÍODO OU DATA */
 function filtrarPeriodo(tipo){
-    let lista = [...registros]
+    let lista=[...registros]
+    if(tipo==="pendentes"){
+        lista = registros.filter(r=>r.STATUS && r.STATUS.trim().toUpperCase()==="PENDENTE")
+    }
+    if(tipo==="hoje"){
+        let hoje = new Date()
+        lista = registros.filter(r=>{
+            if(!r.DATA) return false
+            let d = new Date(r.DATA)
+            return d.toDateString() === hoje.toDateString()
+        })
+    }
+    if(tipo==="semana"){
+        let semana = new Date()
+        semana.setDate(semana.getDate()-7)
+        lista = registros.filter(r=>{
+            if(!r.DATA) return false
+            let d = new Date(r.DATA)
+            return d >= semana
+        })
+    }
+    if(tipo==="mes"){
+        let hoje = new Date()
+        let mesAtual = hoje.getMonth()
+        let anoAtual = hoje.getFullYear()
+        lista = registros.filter(r=>{
+            if(!r.DATA) return false
+            let d = new Date(r.DATA)
+            return d.getMonth()===mesAtual && d.getFullYear()===anoAtual
+        })
+    }
+    if(tipo==="total"){
+        lista = [...registros]
+    }
     if(tipo==="data"){
         let d = document.getElementById("filtroData").value
         if(!d){ mostrarNotificacao("Selecione uma data","#d93025"); return }
-        lista = registros.filter(r=>r.DATA===d)
+        let dataFiltro = new Date(d)
+        lista = registros.filter(r=>{
+            if(!r.DATA) return false
+            let dR = new Date(r.DATA)
+            return dR.toDateString() === dataFiltro.toDateString()
+        })
     }
-    if(tipo==="pendentes") lista = registros.filter(r=>r.STATUS==="PENDENTE")
     mostrarTipos(lista)
     mostrarRanking(lista)
 }
 
-/* RANKING */
-function mostrarRanking(lista){
-    let ranking = {}
-    lista.forEach(r=>{
-        let a = r.ANALISTA?r.ANALISTA.trim():"SEM ANALISTA"
-        if(!ranking[a]) ranking[a]=0
-        ranking[a]++
-    })
-    let html=""
-    for(let a in ranking){
-        html += `<div class="rankingLinha"><span>${a}</span><span>${ranking[a]}</span></div>`
-    }
-    document.getElementById("rankingContainer").innerHTML = html
-}
-
-/* GRAFICO DE TIPOS */
+/* TIPOS DE ATENDIMENTO */
 function mostrarTipos(lista){
     let tipos={}, labels=[], valores=[]
     lista.forEach(r=>{
-        let t=r.TIPO?r.TIPO.trim():"OUTROS"
+        let t = r.TIPO ? r.TIPO.trim() : "OUTROS"
         if(!tipos[t]) tipos[t]=0
         tipos[t]++
     })
@@ -525,9 +622,27 @@ function mostrarTipos(lista){
     if(graficoTipos) graficoTipos.destroy()
     graficoTipos = new Chart(document.getElementById("graficoTipos"),{
         type:"bar",
-        data:{labels, datasets:[{label:"Atendimentos", data:valores, backgroundColor:"#1e4fa3"}]},
-        options:{plugins:{legend:{display:false}}, responsive:true, maintainAspectRatio:false}
+        data:{
+            labels:labels,
+            datasets:[{label:"Atendimentos",data:valores,backgroundColor:"#1e4fa3"}]
+        },
+        options:{plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false}
     })
+}
+
+/* RANKING DE ANALISTAS */
+function mostrarRanking(lista){
+    let ranking={}
+    lista.forEach(r=>{
+        let a = r.ANALISTA ? r.ANALISTA.trim() : "SEM ANALISTA"
+        if(!ranking[a]) ranking[a]=0
+        ranking[a]++
+    })
+    let html=""
+    for(let a in ranking){
+        html += `<div class="rankingLinha"><span>${a}</span><span>${ranking[a]}</span></div>`
+    }
+    document.getElementById("rankingContainer").innerHTML = html
 }
 
 /* NOTIFICAÇÃO */
@@ -536,8 +651,10 @@ function mostrarNotificacao(msg, cor="#1e4fa3"){
     n.innerText=msg
     n.style.background=cor
     n.classList.add("show")
-    setTimeout(()=>{ n.classList.remove("show") },3000)
+    setTimeout(()=>{n.classList.remove("show")},3000)
 }
+
+carregar()
 
 </script>
 
