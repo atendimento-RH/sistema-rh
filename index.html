@@ -394,6 +394,32 @@ Total
 <div id="notificacao"></div>
 
 <script>
+
+
+const API="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec"
+
+let usuarios=[]
+let funcionarios=[]
+let registros=[]
+let grafico=null
+let usuarioAtual=""
+
+/* carregar dados */
+
+async function carregar(){
+
+usuarios = await fetch(API+"?acao=usuarios").then(r=>r.json())
+funcionarios = await fetch(API+"?acao=base").then(r=>r.json())
+registros = await fetch(API+"?acao=registros").then(r=>r.json())
+
+calcularDashboard()
+
+}
+
+carregar()
+
+/* LOGIN */
+
 function login(){
 
 let u=document.getElementById("usuario").value.trim()
@@ -418,28 +444,7 @@ document.getElementById("erro").innerText="Usuário ou senha inválidos"
 
 }
 
-const API="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec"
-
-let usuarios=[]
-let funcionarios=[]
-let registros=[]
-let grafico=null
-let usuarioAtual=""
-
-/* carregar dados */
-
-async function carregar(){
-
-usuarios = await fetch(API+"?acao=usuarios").then(r=>r.json())
-funcionarios = await fetch(API+"?acao=base").then(r=>r.json())
-registros = await fetch(API+"?acao=registros").then(r=>r.json())
-
-calcularDashboard()
-
-}
-
-carregar()
-
+  
 /* trocar tela */
 
 function mostrarTela(t){
