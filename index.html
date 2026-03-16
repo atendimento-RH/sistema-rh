@@ -30,53 +30,17 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
 .cardsDash{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:20px;}
 .cardDash{background:white;padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);text-align:center;width:140px;cursor:pointer;transition:all .2s ease;border:2px solid transparent;}
 .cardDash h2{margin:0;color:#1e4fa3;font-size:32px;}
-.cardDash.ativo{border:2px solid #1e4fa3;box-shadow:0 0 0 4px rgba(30,79,163,0.12), 0 6px 20px rgba(0,0,0,0.08);transform:translateY(-2px);}
-.tipoLinha,.rankingLinha{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;}
+.cardDash.ativo{
+  border:2px solid #1e4fa3;
+  box-shadow:0 0 0 2px rgba(30,79,163,0.10), 0 4px 12px rgba(0,0,0,0.08);
+  transform:none;
+  position:relative;
+  z-index:1;
+}
 #notificacao{position:fixed;top:-80px;left:50%;transform:translateX(-50%);background:#1e4fa3;color:white;padding:16px 30px;border-radius:10px;font-weight:bold;box-shadow:0 8px 25px rgba(0,0,0,0.2);transition:all .4s ease;z-index:9999;}
 #notificacao.show{top:20px;}
 
-.tabelaTipos{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-  overflow:hidden;
-  border-radius:10px;
-}
-.tabelaTipos thead th{
-  background:#1e4fa3;
-  color:white;
-  text-align:left;
-  padding:12px;
-  font-size:14px;
-}
-.tabelaTipos tbody td{
-  padding:12px;
-  border-bottom:1px solid #e9edf5;
-  font-size:14px;
-}
-.tabelaTipos tbody tr:nth-child(even){
-  background:#f7faff;
-}
-.tabelaTipos tbody tr:hover{
-  background:#eef4ff;
-}
-.badgeQtd{
-  display:inline-block;
-  background:#1e4fa3;
-  color:white;
-  padding:4px 10px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:bold;
-}
-.semRegistros{
-  padding:18px;
-  text-align:center;
-  background:#f7faff;
-  border:1px solid #dbe7ff;
-  border-radius:10px;
-  color:#4b5b7a;
-}
+.tabelaTipos,
 .tabelaRanking{
   width:100%;
   border-collapse:collapse;
@@ -84,34 +48,74 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
   overflow:hidden;
   border-radius:10px;
 }
+
+.tabelaTipos thead th,
 .tabelaRanking thead th{
   background:#1e4fa3;
   color:white;
-  text-align:left;
   padding:12px;
   font-size:14px;
 }
+
+.tabelaTipos tbody td,
 .tabelaRanking tbody td{
   padding:12px;
   border-bottom:1px solid #e9edf5;
   font-size:14px;
+  vertical-align:middle;
 }
+
+.tabelaTipos tbody tr:nth-child(even),
 .tabelaRanking tbody tr:nth-child(even){
   background:#f7faff;
 }
+
+.tabelaTipos tbody tr:hover,
 .tabelaRanking tbody tr:hover{
   background:#eef4ff;
 }
-.posicaoRank{
-  display:inline-block;
-  min-width:28px;
+
+.tabelaTipos thead th:nth-child(1),
+.tabelaRanking thead th:nth-child(2){
+  text-align:left;
+}
+
+.tabelaTipos thead th:nth-child(2),
+.tabelaTipos thead th:nth-child(3),
+.tabelaRanking thead th:nth-child(1),
+.tabelaRanking thead th:nth-child(3),
+.tabelaTipos tbody td:nth-child(2),
+.tabelaTipos tbody td:nth-child(3),
+.tabelaRanking tbody td:nth-child(1),
+.tabelaRanking tbody td:nth-child(3){
   text-align:center;
-  background:#e8f0ff;
-  color:#1e4fa3;
-  padding:4px 8px;
+}
+
+.badgeAzul{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:60px;
+  padding:6px 12px;
+  background:#1e4fa3;
+  color:white;
   border-radius:20px;
   font-size:12px;
   font-weight:bold;
+  box-sizing:border-box;
+}
+
+.badgeAzul.pequeno{
+  min-width:42px;
+}
+
+.semRegistros{
+  padding:18px;
+  text-align:center;
+  background:#f7faff;
+  border:1px solid #dbe7ff;
+  border-radius:10px;
+  color:#4b5b7a;
 }
 </style>
 </head>
@@ -627,13 +631,13 @@ function mostrarTipos(lista){
   `;
 
   entries.forEach(([tipo, qtd]) => {
-    let perc = total ? ((qtd / total) * 100).toFixed(1).replace(".", ",") : "0,0";
+    let perc = total ? ((qtd / total) * 100).toFixed(1).replace(".", ",") + "%" : "0,0%";
 
     html += `
       <tr>
         <td>${tipo}</td>
-        <td><span class="badgeQtd">${qtd}</span></td>
-        <td>${perc}%</td>
+        <td><span class="badgeAzul">${qtd}</span></td>
+        <td><span class="badgeAzul">${perc}</span></td>
       </tr>
     `;
   });
@@ -676,9 +680,9 @@ function mostrarRanking(lista){
   entries.forEach(([analista, qtd], i) => {
     html += `
       <tr>
-        <td><span class="posicaoRank">${i + 1}º</span></td>
+        <td><span class="badgeAzul pequeno">${i + 1}º</span></td>
         <td>${analista}</td>
-        <td><span class="badgeQtd">${qtd}</span></td>
+        <td><span class="badgeAzul">${qtd}</span></td>
       </tr>
     `;
   });
