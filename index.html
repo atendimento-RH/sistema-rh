@@ -598,164 +598,169 @@ carregar()
 
 /* DASHBOARD */
 
+/* FORMATAÇÃO DE DATAS PARA JS */
+function parseData(d) {
+    if(!d) return null
+    // aceita formatos dd/mm/yyyy ou yyyy-mm-dd
+    if(d.includes("/")) {
+        let p = d.split("/")
+        return new Date(p[2], p[1]-1, p[0])
+    }
+    if(d.includes("-")) {
+        let p = d.split("-")
+        return new Date(p[0], p[1]-1, p[2])
+    }
+    return null
+}
+
+/* DASHBOARD */
 function calcularDashboard(){
+    let hoje = new Date()
+    let pendentes = registros.filter(r => r.STATUS && r.STATUS.trim().toUpperCase() === "PENDENTE")
+    document.getElementById("dashPendentes").innerText = pendentes.length
+    document.getElementById("dashTotal").innerText = registros.length
 
-let pendentes = registros.filter(r =>
-r.STATUS && r.STATUS.trim().toUpperCase() === "PENDENTE"
-)
+    let registrosHoje = registros.filter(r => {
+        let data = parseData(r.DATA)
+        if(!data) return false
+        return data.toDateString() === hoje.toDateString()
+    })
+    document.getElementById("dashHoje").innerText = registrosHoje.length
 
-document.getElementById("dashPendentes").innerText = pendentes.length
-document.getElementById("dashTotal").innerText = registros.length
+    let semana = new Date()
+    semana.setDate(semana.getDate() - 7)
+    let registrosSemana = registros.filter(r => {
+        let data = parseData(r.DATA)
+        if(!data) return false
+        return data >= semana
+    })
+    document.getElementById("dashSemana").innerText = registrosSemana.length
 
-mostrarTipos(registros)
-mostrarRanking(registros)
+    let mesAtual = hoje.getMonth()
+    let anoAtual = hoje.getFullYear()
+    let registrosMes = registros.filter(r => {
+        let data = parseData(r.DATA)
+        if(!data) return false
+        return data.getMonth() === mesAtual && data.getFullYear() === anoAtual
+    })
+    document.getElementById("dashMes").innerText = registrosMes.length
 
+    // mostrar gráfico e ranking com todos os registros
+    mostrarTipos(registros)
+    mostrarRanking(registros)
 }
 
-/* FILTROS */
-
+/* FILTRO POR DATA */
 function filtrarPeriodo(tipo){
+    let lista = [...registros]
 
-let lista=[...registros]
+    if(tipo=="pendentes"){
+        lista = registros.filter(r =>
+            r.STATUS && r.STATUS.trim().toUpperCase() === "PENDENTE"
+        )
+    }
+    if(tipo=="hoje"){
+        let hoje = new Date()
+        lista = registros.filter(r => {
+            let data = parseData(r.DATA)
+            if(!data) return false
+            return data.toDateString() === hoje.toDateString()
+        })
+    }
+    if(tipo=="semana"){
+        let semana = new Date()
+        semana.setDate(semana.getDate()-7)
+        lista = registros.filter(r => {
+            let data = parseData(r.DATA)
+            if(!data) return false
+            return data >= semana
+        })
+    }
+    if(tipo=="mes"){
+        let hoje = new Date()
+        let mesAtual = hoje.getMonth()
+        let anoAtual = hoje.getFullYear()
+        lista = registros.filter(r => {
+            let data = parseData(r.DATA)
+            if(!data) return false
+            return data.getMonth() === mesAtual && data.getFullYear() === anoAtual
+        })
+    }
+    if(tipo=="total"){
+        lista = [...registros]
+    }
+    if(tipo=="data"){
+        let d = document.getElementById("filtroData").value
+        if(!d){
+            mostrarNotificacao("Selecione uma data","#d93025")
+            return
+        }
+        let dataFiltro = parseData(d)
+        lista = registros.filter(r => {
+            let data = parseData(r.DATA)
+            if(!data) return false
+            return data.toDateString() === dataFiltro.toDateString()
+        })
+    }
 
-if(tipo=="pendentes"){
-
-lista = registros.filter(r =>
-r.STATUS && r.STATUS.trim().toUpperCase() === "PENDENTE"
-)
-
+    mostrarTipos(lista)
+    mostrarRanking(lista)
 }
 
-if(tipo=="hoje"){
-
-let hoje = new Date().toLocaleDateString("pt-BR")
-
-lista = registros.filter(r =>
-r.DATA && r.DATA.trim() === hoje
-)
-
+/* RANKING */
+function mostrarRanking(lista){
+    let ranking = {}
+    lista.forEach(r=>{
+        let a = r.ANALISTA ? r.ANALISTA.trim() : "SEM ANALISTA"
+        if(!ranking[a]) ranking[a] = 0
+        ranking[a]++
+    })
+    let html = ""
+    for(let a in ranking){
+        html += `<div class="rankingLinha"><span>${a}</span><span>${ranking[a]}</span></div>`
+    }
+    document.getElementById("rankingContainer").innerHTML = html
 }
 
-if(tipo=="semana"){
-
-let semana = new Date()
-semana.setDate(semana.getDate()-7)
-
-lista = registros.filter(r => {
-
-if(!r.DATA) return false
-
-let p = r.DATA.split("/")
-let data = new Date(p[2],p[1]-1,p[0])
-
-return data >= semana
-
-})
-
-}
-
-if(tipo=="mes"){
-
-let mesAtual = new Date().getMonth()
-
-lista = registros.filter(r => {
-
-if(!r.DATA) return false
-
-let p = r.DATA.split("/")
-let data = new Date(p[2],p[1]-1,p[0])
-
-return data.getMonth() === mesAtual
-
-})
-
-}
-
-if(tipo=="total"){
-
-lista = [...registros]
-
-}
-
-if(tipo=="data"){
-
-let d = document.getElementById("filtroData").value
-
-if(!d){
-mostrarNotificacao("Selecione uma data","#d93025")
-return
-}
-
-let partes = d.split("-")
-let dataFormatada = partes[2]+"/"+partes[1]+"/"+partes[0]
-
-lista = registros.filter(r =>
-r.DATA && r.DATA.trim() === dataFormatada
-)
-
-}
-
-mostrarTipos(lista)
-mostrarRanking(lista)
-
-}
-
+/* GRAFICO DE TIPOS */
 function mostrarTipos(lista){
+    let tipos={}
+    let labels=[]
+    let valores=[]
+    lista.forEach(r=>{
+        let t = r.TIPO ? r.TIPO.trim() : "OUTROS"
+        if(!tipos[t]) tipos[t]=0
+        tipos[t]++
+    })
+    let html=""
+    for(let t in tipos){
+        html += `<div class="tipoLinha"><span>${t}</span><span>${tipos[t]}</span></div>`
+        labels.push(t)
+        valores.push(tipos[t])
+    }
+    document.getElementById("tiposContainer").innerHTML = html
 
-let tipos={}
-let labels=[]
-let valores=[]
-
-lista.forEach(r=>{
-
-let tipo = r.TIPO ? r.TIPO.trim() : "OUTROS"
-
-if(!tipos[tipo]) tipos[tipo]=0
-tipos[tipo]++
-
-})
-
-let html=""
-
-for(let t in tipos){
-
-html += `<div class="tipoLinha">
-<span>${t}</span>
-<span>${tipos[t]}</span>
-</div>`
-
-labels.push(t)
-valores.push(tipos[t])
-
+    if(graficoTipos){
+        graficoTipos.destroy()
+    }
+    graficoTipos = new Chart(document.getElementById("graficoTipos"),{
+        type:"bar",
+        data:{
+            labels:labels,
+            datasets:[{
+                label:"Atendimentos",
+                data:valores,
+                backgroundColor:"#1e4fa3"
+            }]
+        },
+        options:{
+            plugins:{legend:{display:false}},
+            responsive:true,
+            maintainAspectRatio:false
+        }
+    })
 }
-
-document.getElementById("tiposContainer").innerHTML = html
-
-if(graficoTipos){
-graficoTipos.destroy()
-}
-
-graficoTipos = new Chart(document.getElementById("graficoTipos"),{
-
-type:"bar",
-
-data:{
-labels:labels,
-datasets:[{
-label:"Atendimentos",
-data:valores
-}]
-},
-
-options:{
-plugins:{
-legend:{display:false}
-}
-}
-
-})
-
-}
+  
 /* NOTIFICAÇÃO */
 
 function mostrarNotificacao(msg, cor="#1e4fa3"){
