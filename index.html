@@ -292,8 +292,7 @@ USUÁRIO: <b id="usuarioLogado"></b>
 <div id="notificacao"></div>
 
 <script>
-const URL_USUARIOS="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/USUARIOS";
-const URL_BASE="https://opensheet.elk.sh/1SAgl4yBeKAoSrNqC9ZECE4H4JOXaWJuswyH4UEBTFPk/BASE";
+const API="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec";
 const API_REGISTRO="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec";
 
 let usuarios=[];
@@ -301,8 +300,11 @@ let funcionarios=[];
 let usuarioAtual="";
 
 async function carregar(){
-    usuarios = await fetch(URL_USUARIOS).then(r=>r.json());
-    funcionarios = await fetch(URL_BASE).then(r=>r.json());
+
+    usuarios = await fetch(API + "?acao=usuarios").then(r=>r.json());
+
+    funcionarios = await fetch(API + "?acao=base").then(r=>r.json());
+
 }
 carregar();
 
