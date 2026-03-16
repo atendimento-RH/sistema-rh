@@ -26,7 +26,7 @@ body{margin:0;font-family:Calibri;background:#f2f6fc;height:100vh;display:flex;f
 label{display:block;margin-top:15px;font-weight:bold;}
 input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;margin-top:5px;font-family:Calibri;box-sizing:border-box;}
 .botao{margin-top:25px;padding:14px;background:#1e4fa3;color:white;border:none;border-radius:6px;cursor:pointer;width:100%;font-weight:bold;}
-.botao:disabled{opacity:0.7;cursor:not-allowed;}
+.botao:disabled{opacity:.7;cursor:not-allowed;}
 .cardsDash{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:20px;}
 .cardDash{background:white;padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);text-align:center;width:150px;cursor:pointer;}
 .cardDash h2{margin:0;color:#1e4fa3;font-size:32px;}
@@ -40,8 +40,8 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
 <div id="loginContainer">
   <div class="loginBox">
     <h2>Sistema RH</h2>
-    <input id="usuario" placeholder="Usuário" onkeypress="if(event.key==='Enter') login()">
-    <input id="senha" type="password" placeholder="Senha" onkeypress="if(event.key==='Enter') login()">
+    <input id="usuario" placeholder="Usuário">
+    <input id="senha" type="password" placeholder="Senha">
     <button class="loginBtn" onclick="login()">Entrar</button>
     <div id="erro"></div>
   </div>
@@ -68,7 +68,7 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
         <h3>Registrar Atendimento</h3>
 
         <label>Matrícula *</label>
-        <input id="matricula" oninput="buscarFuncionario()" onkeypress="if(event.key==='Enter') focarProximoCampo('tipo')">
+        <input id="matricula" oninput="buscarFuncionario()">
 
         <label>Nome</label>
         <input id="nome" readonly>
@@ -77,7 +77,7 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
         <input id="cargo" readonly>
 
         <label>Tipo de Atendimento *</label>
-        <select id="tipo" onkeypress="if(event.key==='Enter') focarProximoCampo('status')">
+        <select id="tipo">
           <option value="">-- selecione --</option>
           <option>ACERTO SALARIAL</option>
           <option>CADASTRO</option>
@@ -90,14 +90,14 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
         </select>
 
         <label>Status *</label>
-        <select id="status" onkeypress="if(event.key==='Enter') focarProximoCampo('descricao')">
+        <select id="status">
           <option value="">-- selecione --</option>
           <option>PENDENTE</option>
           <option>RESOLVIDO</option>
         </select>
 
         <label>Descrição *</label>
-        <input id="descricao" onkeypress="if(event.key==='Enter') registrar()">
+        <input id="descricao">
 
         <button class="botao" id="registrarBtn" onclick="registrar()">Registrar Atendimento</button>
       </div>
@@ -152,26 +152,89 @@ async function carregar(){
   }
 }
 
-window.onload = async function(){
-  await carregar();
-
-  let u = localStorage.getItem("usuarioLogado");
-  let p = localStorage.getItem("perfilLogado");
+function restaurarSessao(){
+  const u = localStorage.getItem("usuarioLogado");
+  const p = localStorage.getItem("perfilLogado");
 
   if(u){
     usuarioAtual = u;
-    perfilAtual = p || "";
+    perfilAtual = (p || "USER").toUpperCase();
+
     document.getElementById("loginContainer").style.display = "none";
     document.getElementById("painel").style.display = "block";
     document.getElementById("usuarioLogado").innerText = usuarioAtual;
+
     configurarPermissoes();
     mostrarTela("registro");
+    return true;
   }
+
+  document.getElementById("loginContainer").style.display = "flex";
+  document.getElementById("painel").style.display = "none";
+  return false;
+}
+
+window.onload = async function(){
+  configurarEnter();
+  restaurarSessao();
+  await carregar();
 };
+
+function configurarEnter(){
+  const usuario = document.getElementById("usuario");
+  const senha = document.getElementById("senha");
+  const matricula = document.getElementById("matricula");
+  const tipo = document.getElementById("tipo");
+  const status = document.getElementById("status");
+  const descricao = document.getElementById("descricao");
+
+  usuario.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      login();
+    }
+  });
+
+  senha.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      login();
+    }
+  });
+
+  matricula.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      document.getElementById("tipo").focus();
+    }
+  });
+
+  tipo.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      document.getElementById("status").focus();
+    }
+  });
+
+  status.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      document.getElementById("descricao").focus();
+    }
+  });
+
+  descricao.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      registrar();
+    }
+  });
+}
 
 function configurarPermissoes(){
   const btnDashboard = document.getElementById("btnDashboard");
-  if(perfilAtual === "ADMIN"){
+
+  if((perfilAtual || "").toUpperCase() === "ADMIN"){
     btnDashboard.style.display = "inline-block";
   }else{
     btnDashboard.style.display = "none";
@@ -189,7 +252,7 @@ function mostrarTela(tela){
   }
 
   if(tela === "dashboard"){
-    if(perfilAtual !== "ADMIN"){
+    if((perfilAtual || "").toUpperCase() !== "ADMIN"){
       mostrarNotificacao("Acesso permitido somente para admins", "#d93025");
       document.getElementById("telaRegistro").style.display = "flex";
       return;
@@ -199,7 +262,7 @@ function mostrarTela(tela){
 }
 
 function abrirDashboard(){
-  if(perfilAtual !== "ADMIN"){
+  if((perfilAtual || "").toUpperCase() !== "ADMIN"){
     mostrarNotificacao("Acesso permitido somente para admins", "#d93025");
     return;
   }
@@ -211,7 +274,10 @@ function login(){
   let u = document.getElementById("usuario").value.trim();
   let s = document.getElementById("senha").value.trim();
 
-  let ok = usuarios.find(x => x.USUARIO == u && x.SENHA == s);
+  let ok = usuarios.find(x =>
+    String(x.USUARIO || "").trim() === u &&
+    String(x.SENHA || "").trim() === s
+  );
 
   if(ok){
     usuarioAtual = ok.NOME || ok.USUARIO;
@@ -234,10 +300,13 @@ function login(){
 function logout(){
   localStorage.removeItem("usuarioLogado");
   localStorage.removeItem("perfilLogado");
+
   usuarioAtual = "";
   perfilAtual = "";
+
   document.getElementById("painel").style.display = "none";
   document.getElementById("loginContainer").style.display = "flex";
+
   document.getElementById("usuario").value = "";
   document.getElementById("senha").value = "";
 }
@@ -253,10 +322,6 @@ function buscarFuncionario(){
     document.getElementById("nome").value = "";
     document.getElementById("cargo").value = "";
   }
-}
-
-function focarProximoCampo(id){
-  document.getElementById(id).focus();
 }
 
 async function registrar(){
