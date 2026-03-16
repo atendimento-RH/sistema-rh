@@ -412,372 +412,256 @@ const API="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOV
 let usuarios=[]
 let funcionarios=[]
 let registros=[]
-let grafico=null
+let dashboardData={}
+let graficoTipos=null
 let usuarioAtual=""
 
-/* carregar dados */
-
+/* CARREGAR DADOS */
 async function carregar(){
+    // pegar usuários e funcionários normalmente
+    usuarios = await fetch(API+"?acao=usuarios").then(r=>r.json())
+    funcionarios = await fetch(API+"?acao=base").then(r=>r.json())
 
-usuarios = await fetch(API+"?acao=usuarios").then(r=>r.json())
-funcionarios = await fetch(API+"?acao=base").then(r=>r.json())
-registros = await fetch(API+"?acao=registros").then(r=>r.json())
+    // pegar registros já processados pelo Sheets com contagens prontas
+    registros = await fetch(API+"?acao=registros").then(r=>r.json())
+    // registros é um array de objetos {MATRICULA, NOME, CARGO, TIPO, STATUS, DESCRICAO, ANALISTA, DATA}
 
-calcularDashboard()
-
+    // calculos de cards e ranking/tipos via funções JS simples
+    calcularDashboard()
 }
 
-carregar()
-
-/* manter login */
-
+/* MANTER LOGIN */
 window.onload=function(){
-
-let u=localStorage.getItem("usuarioLogado")
-
-if(u){
-
-usuarioAtual=u
-
-document.getElementById("loginContainer").style.display="none"
-document.getElementById("painel").style.display="block"
-
-document.getElementById("usuarioLogado").innerText=u
-
-}
-
+    let u=localStorage.getItem("usuarioLogado")
+    if(u){
+        usuarioAtual=u
+        document.getElementById("loginContainer").style.display="none"
+        document.getElementById("painel").style.display="block"
+        document.getElementById("usuarioLogado").innerText=u
+    }
 }
 
 /* ENTER login ou registrar */
-
 document.addEventListener("keydown",function(e){
-
-if(e.key==="Enter"){
-
-let loginVisivel=document.getElementById("loginContainer").style.display!="none"
-let registroVisivel=document.getElementById("telaRegistro").style.display!="none"
-
-if(loginVisivel) login()
-else if(registroVisivel) registrar()
-
-}
-
+    if(e.key==="Enter"){
+        let loginVisivel=document.getElementById("loginContainer").style.display!="none"
+        let registroVisivel=document.getElementById("telaRegistro").style.display!="none"
+        if(loginVisivel) login()
+        else if(registroVisivel) registrar()
+    }
 })
 
-/* trocar telas */
-
+/* TROCAR TELAS */
 function mostrarTela(tela){
-
-document.getElementById("telaRegistro").style.display="none"
-document.getElementById("telaDashboard").style.display="none"
-
-if(tela=="registro"){
-document.getElementById("telaRegistro").style.display="flex"
-}
-
-if(tela=="dashboard"){
-document.getElementById("telaDashboard").style.display="flex"
-}
-
+    document.getElementById("telaRegistro").style.display="none"
+    document.getElementById("telaDashboard").style.display="none"
+    if(tela=="registro") document.getElementById("telaRegistro").style.display="flex"
+    if(tela=="dashboard") document.getElementById("telaDashboard").style.display="flex"
 }
 
 /* LOGIN */
-
 function login(){
-
-let u=document.getElementById("usuario").value.trim()
-let s=document.getElementById("senha").value.trim()
-
-let ok=usuarios.find(x=>x.USUARIO==u && x.SENHA==s)
-
-if(ok){
-
-usuarioAtual=ok.NOME
-
-localStorage.setItem("usuarioLogado",usuarioAtual)
-
-document.getElementById("loginContainer").style.display="none"
-document.getElementById("painel").style.display="block"
-
-document.getElementById("usuarioLogado").innerText=usuarioAtual
-
-}else{
-
-mostrarNotificacao("Login ou senha inválidos","#d93025")
-
-}
-
+    let u=document.getElementById("usuario").value.trim()
+    let s=document.getElementById("senha").value.trim()
+    let ok=usuarios.find(x=>x.USUARIO==u && x.SENHA==s)
+    if(ok){
+        usuarioAtual=ok.NOME
+        localStorage.setItem("usuarioLogado",usuarioAtual)
+        document.getElementById("loginContainer").style.display="none"
+        document.getElementById("painel").style.display="block"
+        document.getElementById("usuarioLogado").innerText=usuarioAtual
+    }else{
+        mostrarNotificacao("Login ou senha inválidos","#d93025")
+    }
 }
 
 /* LOGOUT */
-
 function logout(){
-
-localStorage.removeItem("usuarioLogado")
-
-document.getElementById("painel").style.display="none"
-document.getElementById("loginContainer").style.display="flex"
-
+    localStorage.removeItem("usuarioLogado")
+    document.getElementById("painel").style.display="none"
+    document.getElementById("loginContainer").style.display="flex"
 }
 
 /* AUTOPREENCHIMENTO */
-
 function buscarFuncionario(){
-
-let mat=document.getElementById("matricula").value.trim()
-
-let f=funcionarios.find(x=>x.MATRICULA==mat)
-
-if(f){
-
-document.getElementById("nome").value=f.NOME
-document.getElementById("cargo").value=f.CARGO
-
-}else{
-
-document.getElementById("nome").value=""
-document.getElementById("cargo").value=""
-
-}
-
+    let mat=document.getElementById("matricula").value.trim()
+    let f=funcionarios.find(x=>x.MATRICULA==mat)
+    if(f){
+        document.getElementById("nome").value=f.NOME
+        document.getElementById("cargo").value=f.CARGO
+    }else{
+        document.getElementById("nome").value=""
+        document.getElementById("cargo").value=""
+    }
 }
 
 /* REGISTRAR */
-
 async function registrar(){
+    let matricula=document.getElementById("matricula").value
+    let nome=document.getElementById("nome").value
+    let cargo=document.getElementById("cargo").value
+    let tipo=document.getElementById("tipo").value
+    let status=document.getElementById("status").value
+    let descricao=document.getElementById("descricao").value
 
-let matricula=document.getElementById("matricula").value
-let nome=document.getElementById("nome").value
-let cargo=document.getElementById("cargo").value
-let tipo=document.getElementById("tipo").value
-let status=document.getElementById("status").value
-let descricao=document.getElementById("descricao").value
-
-if(!matricula || !tipo || !status || !descricao){
-
-mostrarNotificacao("Preencha os campos obrigatórios","#d93025")
-return
-
-}
-
-document.getElementById("registrarBtn").disabled=true
-document.getElementById("registrarBtn").innerText="Registrando..."
-
-await fetch(API,{
-method:"POST",
-body:JSON.stringify({
-matricula,
-nome,
-cargo,
-tipo,
-status,
-descricao,
-analista:usuarioAtual
-})
-})
-
-document.getElementById("registrarBtn").disabled=false
-document.getElementById("registrarBtn").innerText="Registrar Atendimento"
-
-/* limpar */
-
-document.getElementById("matricula").value=""
-document.getElementById("nome").value=""
-document.getElementById("cargo").value=""
-document.getElementById("tipo").value=""
-document.getElementById("status").value=""
-document.getElementById("descricao").value=""
-
-document.getElementById("matricula").focus()
-
-mostrarNotificacao("Atendimento registrado com sucesso")
-
-carregar()
-
-}
-
-/* DASHBOARD */
-
-/* FORMATAÇÃO DE DATAS PARA JS */
-function parseData(d) {
-    if(!d) return null
-    // aceita formatos dd/mm/yyyy ou yyyy-mm-dd
-    if(d.includes("/")) {
-        let p = d.split("/")
-        return new Date(p[2], p[1]-1, p[0])
+    if(!matricula || !tipo || !status || !descricao){
+        mostrarNotificacao("Preencha os campos obrigatórios","#d93025")
+        return
     }
-    if(d.includes("-")) {
-        let p = d.split("-")
-        return new Date(p[0], p[1]-1, p[2])
-    }
-    return null
+
+    document.getElementById("registrarBtn").disabled=true
+    document.getElementById("registrarBtn").innerText="Registrando..."
+
+    await fetch(API,{
+        method:"POST",
+        body:JSON.stringify({
+            matricula,
+            nome,
+            cargo,
+            tipo,
+            status,
+            descricao,
+            analista:usuarioAtual
+        })
+    })
+
+    document.getElementById("registrarBtn").disabled=false
+    document.getElementById("registrarBtn").innerText="Registrar Atendimento"
+
+    // limpar campos
+    document.getElementById("matricula").value=""
+    document.getElementById("nome").value=""
+    document.getElementById("cargo").value=""
+    document.getElementById("tipo").value=""
+    document.getElementById("status").value=""
+    document.getElementById("descricao").value=""
+    document.getElementById("matricula").focus()
+
+    mostrarNotificacao("Atendimento registrado com sucesso")
+
+    // recarregar dashboard
+    carregar()
 }
 
 /* DASHBOARD */
 function calcularDashboard(){
-    let hoje = new Date()
-    let pendentes = registros.filter(r => r.STATUS && r.STATUS.trim().toUpperCase() === "PENDENTE")
-    document.getElementById("dashPendentes").innerText = pendentes.length
-    document.getElementById("dashTotal").innerText = registros.length
-
-    let registrosHoje = registros.filter(r => {
-        let data = parseData(r.DATA)
-        if(!data) return false
-        return data.toDateString() === hoje.toDateString()
-    })
-    document.getElementById("dashHoje").innerText = registrosHoje.length
-
-    let semana = new Date()
-    semana.setDate(semana.getDate() - 7)
-    let registrosSemana = registros.filter(r => {
-        let data = parseData(r.DATA)
-        if(!data) return false
-        return data >= semana
-    })
-    document.getElementById("dashSemana").innerText = registrosSemana.length
-
-    let mesAtual = hoje.getMonth()
-    let anoAtual = hoje.getFullYear()
-    let registrosMes = registros.filter(r => {
-        let data = parseData(r.DATA)
-        if(!data) return false
-        return data.getMonth() === mesAtual && data.getFullYear() === anoAtual
-    })
-    document.getElementById("dashMes").innerText = registrosMes.length
-
-    // mostrar gráfico e ranking com todos os registros
-    mostrarTipos(registros)
-    mostrarRanking(registros)
-}
-
-/* FILTRO POR DATA */
-function filtrarPeriodo(tipo){
-    let lista = [...registros]
-
-    if(tipo=="pendentes"){
-        lista = registros.filter(r =>
-            r.STATUS && r.STATUS.trim().toUpperCase() === "PENDENTE"
-        )
-    }
-    if(tipo=="hoje"){
-        let hoje = new Date()
-        lista = registros.filter(r => {
-            let data = parseData(r.DATA)
-            if(!data) return false
-            return data.toDateString() === hoje.toDateString()
-        })
-    }
-    if(tipo=="semana"){
-        let semana = new Date()
-        semana.setDate(semana.getDate()-7)
-        lista = registros.filter(r => {
-            let data = parseData(r.DATA)
-            if(!data) return false
-            return data >= semana
-        })
-    }
-    if(tipo=="mes"){
-        let hoje = new Date()
-        let mesAtual = hoje.getMonth()
-        let anoAtual = hoje.getFullYear()
-        lista = registros.filter(r => {
-            let data = parseData(r.DATA)
-            if(!data) return false
-            return data.getMonth() === mesAtual && data.getFullYear() === anoAtual
-        })
-    }
-    if(tipo=="total"){
-        lista = [...registros]
-    }
-    if(tipo=="data"){
-        let d = document.getElementById("filtroData").value
-        if(!d){
-            mostrarNotificacao("Selecione uma data","#d93025")
-            return
-        }
-        let dataFiltro = parseData(d)
-        lista = registros.filter(r => {
-            let data = parseData(r.DATA)
-            if(!data) return false
-            return data.toDateString() === dataFiltro.toDateString()
-        })
-    }
-
-    mostrarTipos(lista)
-    mostrarRanking(lista)
-}
-
-/* RANKING */
-function mostrarRanking(lista){
+    let cards = {hoje:0, semana:0, mes:0, pendentes:0, total:0}
+    let tipos = {}
     let ranking = {}
-    lista.forEach(r=>{
+
+    const hoje = new Date()
+    const semana = new Date(); semana.setDate(semana.getDate()-7)
+    const mes = hoje.getMonth()
+    const ano = hoje.getFullYear()
+
+    registros.forEach(r=>{
+        // contar pendentes
+        if(r.STATUS && r.STATUS.trim().toUpperCase()==="PENDENTE") cards.pendentes++
+
+        // contar total
+        cards.total++
+
+        // contar hoje/semana/mes baseado em DATA vindo do Sheets
+        if(r.DATA){
+            const d = new Date(r.DATA)
+            if(d.toDateString()===hoje.toDateString()) cards.hoje++
+            if(d>=semana) cards.semana++
+            if(d.getMonth()===mes && d.getFullYear()===ano) cards.mes++
+        }
+
+        // tipos de atendimento
+        let t = r.TIPO ? r.TIPO.trim() : "OUTROS"
+        if(!tipos[t]) tipos[t]=0
+        tipos[t]++
+
+        // ranking analistas
         let a = r.ANALISTA ? r.ANALISTA.trim() : "SEM ANALISTA"
-        if(!ranking[a]) ranking[a] = 0
+        if(!ranking[a]) ranking[a]=0
         ranking[a]++
     })
-    let html = ""
-    for(let a in ranking){
-        html += `<div class="rankingLinha"><span>${a}</span><span>${ranking[a]}</span></div>`
+
+    // atualizar cards
+    document.getElementById("dashHoje").innerText = cards.hoje
+    document.getElementById("dashSemana").innerText = cards.semana
+    document.getElementById("dashMes").innerText = cards.mes
+    document.getElementById("dashPendentes").innerText = cards.pendentes
+    document.getElementById("dashTotal").innerText = cards.total
+
+    // mostrar gráfico e ranking
+    mostrarTipos(tipos)
+    mostrarRanking(ranking)
+}
+
+/* MOSTRAR TIPOS */
+function mostrarTipos(tiposObj){
+    let labels=[]
+    let valores=[]
+    let html=""
+    for(let t in tiposObj){
+        labels.push(t)
+        valores.push(tiposObj[t])
+        html+=`<div class="tipoLinha"><span>${t}</span><span>${tiposObj[t]}</span></div>`
+    }
+    document.getElementById("tiposContainer").innerHTML = html
+
+    if(graficoTipos) graficoTipos.destroy()
+    graficoTipos = new Chart(document.getElementById("graficoTipos"),{
+        type:"bar",
+        data:{labels:labels,datasets:[{label:"Atendimentos",data:valores,backgroundColor:"#1e4fa3"}]},
+        options:{plugins:{legend:{display:false}},responsive:true,maintainAspectRatio:false}
+    })
+}
+
+/* MOSTRAR RANKING */
+function mostrarRanking(rankingObj){
+    let html=""
+    for(let a in rankingObj){
+        html+=`<div class="rankingLinha"><span>${a}</span><span>${rankingObj[a]}</span></div>`
     }
     document.getElementById("rankingContainer").innerHTML = html
 }
 
-/* GRAFICO DE TIPOS */
-function mostrarTipos(lista){
-    let tipos={}
-    let labels=[]
-    let valores=[]
-    lista.forEach(r=>{
-        let t = r.TIPO ? r.TIPO.trim() : "OUTROS"
-        if(!tipos[t]) tipos[t]=0
-        tipos[t]++
-    })
-    let html=""
-    for(let t in tipos){
-        html += `<div class="tipoLinha"><span>${t}</span><span>${tipos[t]}</span></div>`
-        labels.push(t)
-        valores.push(tipos[t])
-    }
-    document.getElementById("tiposContainer").innerHTML = html
-
-    if(graficoTipos){
-        graficoTipos.destroy()
-    }
-    graficoTipos = new Chart(document.getElementById("graficoTipos"),{
-        type:"bar",
-        data:{
-            labels:labels,
-            datasets:[{
-                label:"Atendimentos",
-                data:valores,
-                backgroundColor:"#1e4fa3"
-            }]
-        },
-        options:{
-            plugins:{legend:{display:false}},
-            responsive:true,
-            maintainAspectRatio:false
+/* FILTRO POR DATA */
+function filtrarPeriodo(tipo){
+    if(tipo==="data"){
+        let d=document.getElementById("filtroData").value
+        if(!d){
+            mostrarNotificacao("Selecione uma data","#d93025")
+            return
         }
-    })
+        const filtro = new Date(d)
+        // filtrar registros por DATA
+        let filtrados = registros.filter(r=>{
+            if(!r.DATA) return false
+            return new Date(r.DATA).toDateString()===filtro.toDateString()
+        })
+        // recalcular tipos e ranking somente com registros filtrados
+        let tipos={}, ranking={}
+        filtrados.forEach(r=>{
+            let t = r.TIPO ? r.TIPO.trim() : "OUTROS"
+            if(!tipos[t]) tipos[t]=0
+            tipos[t]++
+
+            let a = r.ANALISTA ? r.ANALISTA.trim() : "SEM ANALISTA"
+            if(!ranking[a]) ranking[a]=0
+            ranking[a]++
+        })
+        mostrarTipos(tipos)
+        mostrarRanking(ranking)
+    } else {
+        calcularDashboard()
+    }
 }
-  
+
 /* NOTIFICAÇÃO */
-
 function mostrarNotificacao(msg, cor="#1e4fa3"){
-
-let n=document.getElementById("notificacao")
-
-n.innerText=msg
-n.style.background=cor
-
-n.classList.add("show")
-
-setTimeout(()=>{
-n.classList.remove("show")
-},3000)
-
+    let n=document.getElementById("notificacao")
+    n.innerText=msg
+    n.style.background=cor
+    n.classList.add("show")
+    setTimeout(()=>{n.classList.remove("show")},3000)
 }
-
+    
 </script>
 
 </body>
