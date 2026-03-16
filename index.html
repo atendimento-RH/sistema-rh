@@ -600,7 +600,15 @@ carregar()
 
 function calcularDashboard(){
 
-document.getElementById("dashTotal").innerText=registros.length
+let pendentes = registros.filter(r =>
+r.STATUS && r.STATUS.trim().toUpperCase() === "PENDENTE"
+)
+
+document.getElementById("dashPendentes").innerText = pendentes.length
+document.getElementById("dashTotal").innerText = registros.length
+
+mostrarTipos(registros)
+mostrarRanking(registros)
 
 }
 
@@ -610,15 +618,80 @@ function filtrarPeriodo(tipo){
 
 let lista=[...registros]
 
+if(tipo=="pendentes"){
+
+lista = registros.filter(r =>
+r.STATUS && r.STATUS.trim().toUpperCase() === "PENDENTE"
+)
+
+}
+
+if(tipo=="hoje"){
+
+let hoje = new Date().toLocaleDateString("pt-BR")
+
+lista = registros.filter(r =>
+r.DATA && r.DATA.trim() === hoje
+)
+
+}
+
+if(tipo=="semana"){
+
+let semana = new Date()
+semana.setDate(semana.getDate()-7)
+
+lista = registros.filter(r => {
+
+if(!r.DATA) return false
+
+let p = r.DATA.split("/")
+let data = new Date(p[2],p[1]-1,p[0])
+
+return data >= semana
+
+})
+
+}
+
+if(tipo=="mes"){
+
+let mesAtual = new Date().getMonth()
+
+lista = registros.filter(r => {
+
+if(!r.DATA) return false
+
+let p = r.DATA.split("/")
+let data = new Date(p[2],p[1]-1,p[0])
+
+return data.getMonth() === mesAtual
+
+})
+
+}
+
+if(tipo=="total"){
+
+lista = [...registros]
+
+}
+
 if(tipo=="data"){
 
-let d=document.getElementById("filtroData").value
-if(!d) return
+let d = document.getElementById("filtroData").value
 
-let p=d.split("-")
-let data=p[2]+"/"+p[1]+"/"+p[0]
+if(!d){
+mostrarNotificacao("Selecione uma data","#d93025")
+return
+}
 
-lista=registros.filter(r=>r.DATA==data)
+let partes = d.split("-")
+let dataFormatada = partes[2]+"/"+partes[1]+"/"+partes[0]
+
+lista = registros.filter(r =>
+r.DATA && r.DATA.trim() === dataFormatada
+)
 
 }
 
@@ -627,48 +700,62 @@ mostrarRanking(lista)
 
 }
 
-/* TIPOS */
-
 function mostrarTipos(lista){
 
 let tipos={}
+let labels=[]
+let valores=[]
 
-lista.forEach(a=>{
-if(!tipos[a.TIPO]) tipos[a.TIPO]=0
-tipos[a.TIPO]++
+lista.forEach(r=>{
+
+let tipo = r.TIPO ? r.TIPO.trim() : "OUTROS"
+
+if(!tipos[tipo]) tipos[tipo]=0
+tipos[tipo]++
+
 })
 
 let html=""
 
 for(let t in tipos){
-html+=`<div class="tipoLinha"><span>${t}</span><span>${tipos[t]}</span></div>`
+
+html += `<div class="tipoLinha">
+<span>${t}</span>
+<span>${tipos[t]}</span>
+</div>`
+
+labels.push(t)
+valores.push(tipos[t])
+
 }
 
-document.getElementById("tiposContainer").innerHTML=html
+document.getElementById("tiposContainer").innerHTML = html
 
+if(graficoTipos){
+graficoTipos.destroy()
 }
 
-/* RANKING */
+graficoTipos = new Chart(document.getElementById("graficoTipos"),{
 
-function mostrarRanking(lista){
+type:"bar",
 
-let r={}
+data:{
+labels:labels,
+datasets:[{
+label:"Atendimentos",
+data:valores
+}]
+},
 
-lista.forEach(a=>{
-if(!r[a.USUARIO]) r[a.USUARIO]=0
-r[a.USUARIO]++
+options:{
+plugins:{
+legend:{display:false}
+}
+}
+
 })
 
-let html=""
-
-Object.entries(r).forEach(x=>{
-html+=`<div class="rankingLinha"><span>${x[0]}</span><span>${x[1]}</span></div>`
-})
-
-document.getElementById("rankingContainer").innerHTML=html
-
 }
-
 /* NOTIFICAÇÃO */
 
 function mostrarNotificacao(msg, cor="#1e4fa3"){
