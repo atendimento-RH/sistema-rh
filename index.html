@@ -418,6 +418,26 @@ calcularDashboard()
 
 carregar()
 
+function buscarFuncionario(){
+
+let mat = document.getElementById("matricula").value.trim()
+
+let f = funcionarios.find(x => x.MATRICULA == mat)
+
+if(f){
+
+document.getElementById("nome").value = f.NOME
+document.getElementById("cargo").value = f.CARGO
+
+}else{
+
+document.getElementById("nome").value = ""
+document.getElementById("cargo").value = ""
+
+}
+
+}
+
 /* LOGIN */
 
 function login(){
