@@ -114,7 +114,7 @@ font-weight:bold;
 /* MENU */
 
 .menu{
-margin-top:90px;
+margin-top:100px;
 display:flex;
 justify-content:center;
 gap:15px;
@@ -129,12 +129,10 @@ border-radius:8px;
 cursor:pointer;
 font-weight:bold;
 font-size:15px;
-transition:0.2s;
 }
 
 .menu button:hover{
 background:#163c7d;
-transform:translateY(-2px);
 }
 
 /* CONTAINERS */
@@ -142,7 +140,7 @@ transform:translateY(-2px);
 .centralContainer{
 display:flex;
 justify-content:center;
-margin-top:20px;
+margin-top:30px;
 }
 
 .container{
@@ -403,7 +401,6 @@ Total
 
 <script>
 
-
 const API="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec"
 
 let usuarios=[]
@@ -426,27 +423,40 @@ calcularDashboard()
 
 carregar()
 
-/* autopreenchimento */
+/* manter login */
 
-function buscarFuncionario(){
+window.onload=function(){
 
-let mat = document.getElementById("matricula").value.trim()
+let u=localStorage.getItem("usuarioLogado")
 
-let f = funcionarios.find(x => x.MATRICULA == mat)
+if(u){
 
-if(f){
+usuarioAtual=u
 
-document.getElementById("nome").value = f.NOME
-document.getElementById("cargo").value = f.CARGO
+document.getElementById("loginContainer").style.display="none"
+document.getElementById("painel").style.display="block"
 
-}else{
-
-document.getElementById("nome").value = ""
-document.getElementById("cargo").value = ""
+document.getElementById("usuarioLogado").innerText=u
 
 }
 
 }
+
+/* ENTER login ou registrar */
+
+document.addEventListener("keydown",function(e){
+
+if(e.key==="Enter"){
+
+let loginVisivel=document.getElementById("loginContainer").style.display!="none"
+let registroVisivel=document.getElementById("telaRegistro").style.display!="none"
+
+if(loginVisivel) login()
+else if(registroVisivel) registrar()
+
+}
+
+})
 
 /* LOGIN */
 
@@ -461,6 +471,8 @@ if(ok){
 
 usuarioAtual=ok.NOME
 
+localStorage.setItem("usuarioLogado",usuarioAtual)
+
 document.getElementById("loginContainer").style.display="none"
 document.getElementById("painel").style.display="block"
 
@@ -474,37 +486,40 @@ document.getElementById("erro").innerText="Usuário ou senha inválidos"
 
 }
 
-/* login com ENTER */
-
-document.addEventListener("keypress",function(e){
-
-if(e.key==="Enter"){
-
-let painelVisivel = document.getElementById("painel").style.display=="block"
-let telaRegistro = document.getElementById("telaRegistro").style.display!="none"
-
-if(painelVisivel && telaRegistro){
-
-registrar()
-
-}
-
-}
-
-})
 /* LOGOUT */
 
 function logout(){
 
+localStorage.removeItem("usuarioLogado")
+
 document.getElementById("painel").style.display="none"
 document.getElementById("loginContainer").style.display="flex"
 
-document.getElementById("usuario").value=""
-document.getElementById("senha").value=""
+}
+
+/* AUTOPREENCHIMENTO */
+
+function buscarFuncionario(){
+
+let mat=document.getElementById("matricula").value.trim()
+
+let f=funcionarios.find(x=>x.MATRICULA==mat)
+
+if(f){
+
+document.getElementById("nome").value=f.NOME
+document.getElementById("cargo").value=f.CARGO
+
+}else{
+
+document.getElementById("nome").value=""
+document.getElementById("cargo").value=""
 
 }
 
-/* registrar atendimento */
+}
+
+/* REGISTRAR */
 
 async function registrar(){
 
@@ -522,9 +537,6 @@ return
 
 }
 
-document.getElementById("registrarBtn").disabled=true
-document.getElementById("registrarBtn").innerText="Registrando..."
-
 await fetch(API,{
 method:"POST",
 body:JSON.stringify({
@@ -538,12 +550,6 @@ analista:usuarioAtual
 })
 })
 
-document.getElementById("registrarBtn").disabled=false
-document.getElementById("registrarBtn").innerText="Registrar Atendimento"
-
-document.getElementById("descricao").value=""
-
-mostrarNotificacao("Atendimento registrado com sucesso")
 document.getElementById("matricula").value=""
 document.getElementById("nome").value=""
 document.getElementById("cargo").value=""
@@ -552,209 +558,36 @@ document.getElementById("status").value=""
 document.getElementById("descricao").value=""
 
 document.getElementById("matricula").focus()
-  
+
+mostrarNotificacao("Atendimento registrado")
+
 carregar()
 
 }
 
-/* trocar tela */
-
-function mostrarTela(t){
-
-document.getElementById("telaRegistro").style.display="none"
-document.getElementById("telaDashboard").style.display="none"
-
-if(t=="registro") document.getElementById("telaRegistro").style.display="flex"
-if(t=="dashboard") document.getElementById("telaDashboard").style.display="flex"
-
-}
-
-/* dashboard */
+/* DASHBOARD */
 
 function calcularDashboard(){
 
-let hoje=new Date().toLocaleDateString()
-
-let hojeQtd=0
-let semanaQtd=0
-let mesQtd=0
-let pend=0
-
-let semana=new Date()
-semana.setDate(semana.getDate()-7)
-
-registros.forEach(r=>{
-
-let p=r.DATA.split("/")
-let data=new Date(p[2],p[1]-1,p[0])
-
-if(r.DATA==hoje) hojeQtd++
-if(data>=semana) semanaQtd++
-if(data.getMonth()==new Date().getMonth()) mesQtd++
-if(r.STATUS=="PENDENTE") pend++
-
-})
-
-document.getElementById("dashHoje").innerText=hojeQtd
-document.getElementById("dashSemana").innerText=semanaQtd
-document.getElementById("dashMes").innerText=mesQtd
-document.getElementById("dashPendentes").innerText=pend
 document.getElementById("dashTotal").innerText=registros.length
 
-mostrarTipos(registros)
-mostrarRanking(registros)
-
 }
 
-/* tipos */
+/* FILTRO DATA */
 
-function mostrarTipos(lista){
+function filtrarPeriodo(tipo){
 
-let tipos={}
-let labels=[]
-let valores=[]
-
-lista.forEach(a=>{
-
-if(!tipos[a.TIPO]) tipos[a.TIPO]=0
-tipos[a.TIPO]++
-
-})
-
-let html=""
-
-for(let t in tipos){
-
-html+=`<div class="tipoLinha"><span>${t}</span><span>${tipos[t]}</span></div>`
-
-labels.push(t)
-valores.push(tipos[t])
-
-}
-
-document.getElementById("tiposContainer").innerHTML=html
-
-if(grafico) grafico.destroy()
-
-grafico=new Chart(document.getElementById("graficoTipos"),{
-
-type:"bar",
-
-data:{
-labels:labels,
-datasets:[{data:valores}]
-},
-
-options:{plugins:{legend:{display:false}}}
-
-})
-
-}
-
-/* ranking */
-
-function mostrarRanking(lista){
-
-let r={}
-
-lista.forEach(a=>{
-
-if(!r[a.USUARIO]) r[a.USUARIO]=0
-r[a.USUARIO]++
-
-})
-
-let ord=Object.entries(r).sort((a,b)=>b[1]-a[1])
-
-let html=""
-
-ord.forEach(x=>{
-
-html+=`<div class="rankingLinha"><span>${x[0]}</span><span>${x[1]}</span></div>`
-
-})
-
-document.getElementById("rankingContainer").innerHTML=html
-
-}
-
-/* notificação */
-
-function mostrarNotificacao(msg){
-
-let n=document.getElementById("notificacao")
-
-n.innerText=msg
-n.style.display="block"
-
-setTimeout(()=>{
-
-n.style.display="none"
-
-},3000)
-
-}
-
-  function filtrarPeriodo(tipo){
-
-let lista = [...registros]
-
-let hoje = new Date().toLocaleDateString()
-
-if(tipo=="hoje"){
-
-lista = registros.filter(r => r.DATA == hoje)
-
-}
-
-if(tipo=="semana"){
-
-let semana = new Date()
-semana.setDate(semana.getDate()-7)
-
-lista = registros.filter(r=>{
-
-let p=r.DATA.split("/")
-let data=new Date(p[2],p[1]-1,p[0])
-
-return data>=semana
-
-})
-
-}
-
-if(tipo=="mes"){
-
-let mesAtual=new Date().getMonth()
-
-lista = registros.filter(r=>{
-
-let p=r.DATA.split("/")
-let data=new Date(p[2],p[1]-1,p[0])
-
-return data.getMonth()==mesAtual
-
-})
-
-}
-
-if(tipo=="pendentes"){
-
-lista = registros.filter(r=>r.STATUS=="PENDENTE")
-
-}
+let lista=[...registros]
 
 if(tipo=="data"){
 
 let d=document.getElementById("filtroData").value
-
 if(!d) return
 
-let partes=d.split("-")
+let p=d.split("-")
+let data=p[2]+"/"+p[1]+"/"+p[0]
 
-let dataFormatada=partes[2]+"/"+partes[1]+"/"+partes[0]
-
-lista = registros.filter(r=>r.DATA==dataFormatada)
+lista=registros.filter(r=>r.DATA==data)
 
 }
 
@@ -763,19 +596,60 @@ mostrarRanking(lista)
 
 }
 
-document.addEventListener("keypress",function(e){
+/* TIPOS */
 
-if(e.key==="Enter"){
+function mostrarTipos(lista){
 
-let telaRegistro = document.getElementById("telaRegistro")
+let tipos={}
 
-if(telaRegistro.style.display!="none"){
-registrar()
-}
-
-}
-
+lista.forEach(a=>{
+if(!tipos[a.TIPO]) tipos[a.TIPO]=0
+tipos[a.TIPO]++
 })
+
+let html=""
+
+for(let t in tipos){
+html+=`<div class="tipoLinha"><span>${t}</span><span>${tipos[t]}</span></div>`
+}
+
+document.getElementById("tiposContainer").innerHTML=html
+
+}
+
+/* RANKING */
+
+function mostrarRanking(lista){
+
+let r={}
+
+lista.forEach(a=>{
+if(!r[a.USUARIO]) r[a.USUARIO]=0
+r[a.USUARIO]++
+})
+
+let html=""
+
+Object.entries(r).forEach(x=>{
+html+=`<div class="rankingLinha"><span>${x[0]}</span><span>${x[1]}</span></div>`
+})
+
+document.getElementById("rankingContainer").innerHTML=html
+
+}
+
+/* NOTIFICAÇÃO */
+
+function mostrarNotificacao(msg){
+
+let n=document.getElementById("notificacao")
+
+n.innerText=msg
+n.style.display="block"
+
+setTimeout(()=>{n.style.display="none"},3000)
+
+}
 
 </script>
 
