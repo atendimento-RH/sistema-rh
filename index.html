@@ -9,7 +9,7 @@
 body{margin:0;font-family:Calibri;background:#f2f6fc;height:100vh;display:flex;flex-direction:column;}
 #loginContainer{height:100vh;display:flex;align-items:center;justify-content:center;}
 .loginBox{background:white;padding:50px;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,0.15);width:350px;text-align:center;}
-.loginBox input{width:100%;padding:12px;margin-top:12px;border:1px solid #ccc;border-radius:6px;}
+.loginBox input{width:100%;padding:12px;margin-top:12px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;}
 .loginBtn{margin-top:20px;width:100%;padding:12px;background:#1e4fa3;border:none;color:white;border-radius:6px;cursor:pointer;font-weight:bold;}
 #painel{display:none;flex:1;}
 .header{position:fixed;top:0;left:0;width:100%;background:#1e4fa3;display:flex;align-items:center;justify-content:space-between;padding:10px 25px;height:80px;box-shadow:0 4px 12px rgba(0,0,0,0.2);color:white;box-sizing:border-box;}
@@ -17,15 +17,16 @@ body{margin:0;font-family:Calibri;background:#f2f6fc;height:100vh;display:flex;f
 .headerTitulo{position:absolute;left:50%;transform:translateX(-50%);font-size:24px;font-weight:bold;}
 .userInfo{display:flex;align-items:center;gap:10px;}
 .logoutBtn{background:white;border:none;color:#1e4fa3;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;}
-.menu{margin-top:100px;display:flex;justify-content:center;gap:15px;}
+.menu{margin-top:100px;display:flex;justify-content:center;gap:15px;flex-wrap:wrap;}
 .menu button{padding:12px 28px;border:none;background:#1e4fa3;color:white;border-radius:8px;cursor:pointer;font-weight:bold;font-size:15px;}
 .menu button:hover{background:#163c7d;}
-.centralContainer{display:flex;justify-content:center;margin-top:30px;}
+.centralContainer{display:flex;justify-content:center;margin-top:30px;padding-bottom:30px;}
 .container{max-width:700px;width:100%;}
 .card{background:white;padding:35px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);}
 label{display:block;margin-top:15px;font-weight:bold;}
-input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;margin-top:5px;font-family:Calibri;}
+input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;margin-top:5px;font-family:Calibri;box-sizing:border-box;}
 .botao{margin-top:25px;padding:14px;background:#1e4fa3;color:white;border:none;border-radius:6px;cursor:pointer;width:100%;font-weight:bold;}
+.botao:disabled{opacity:0.7;cursor:not-allowed;}
 .cardsDash{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:20px;}
 .cardDash{background:white;padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);text-align:center;width:150px;cursor:pointer;}
 .cardDash h2{margin:0;color:#1e4fa3;font-size:32px;}
@@ -36,18 +37,16 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="loginContainer">
   <div class="loginBox">
     <h2>Sistema RH</h2>
-    <input id="usuario" placeholder="Usuário">
-    <input id="senha" type="password" placeholder="Senha">
+    <input id="usuario" placeholder="Usuário" onkeypress="if(event.key==='Enter') login()">
+    <input id="senha" type="password" placeholder="Senha" onkeypress="if(event.key==='Enter') login()">
     <button class="loginBtn" onclick="login()">Entrar</button>
     <div id="erro"></div>
   </div>
 </div>
 
-<!-- PAINEL -->
 <div id="painel">
   <div class="header">
     <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg">
@@ -58,25 +57,27 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
     </div>
   </div>
 
-  <!-- MENU -->
   <div class="menu">
     <button onclick="mostrarTela('registro')">Registrar Atendimento</button>
-    <button onclick="mostrarTela('dashboard')">Dashboard</button>
+    <button id="btnDashboard" onclick="abrirDashboard()">Dashboard</button>
   </div>
 
-  <!-- REGISTRO -->
   <div id="telaRegistro" class="centralContainer">
     <div class="container">
       <div class="card">
         <h3>Registrar Atendimento</h3>
+
         <label>Matrícula *</label>
-        <input id="matricula" oninput="buscarFuncionario()">
+        <input id="matricula" oninput="buscarFuncionario()" onkeypress="if(event.key==='Enter') focarProximoCampo('tipo')">
+
         <label>Nome</label>
         <input id="nome" readonly>
+
         <label>Cargo</label>
         <input id="cargo" readonly>
+
         <label>Tipo de Atendimento *</label>
-        <select id="tipo">
+        <select id="tipo" onkeypress="if(event.key==='Enter') focarProximoCampo('status')">
           <option value="">-- selecione --</option>
           <option>ACERTO SALARIAL</option>
           <option>CADASTRO</option>
@@ -87,20 +88,22 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
           <option>FÉRIAS</option>
           <option>OUTROS</option>
         </select>
+
         <label>Status *</label>
-        <select id="status">
+        <select id="status" onkeypress="if(event.key==='Enter') focarProximoCampo('descricao')">
           <option value="">-- selecione --</option>
           <option>PENDENTE</option>
           <option>RESOLVIDO</option>
         </select>
+
         <label>Descrição *</label>
-        <input id="descricao">
+        <input id="descricao" onkeypress="if(event.key==='Enter') registrar()">
+
         <button class="botao" id="registrarBtn" onclick="registrar()">Registrar Atendimento</button>
       </div>
     </div>
   </div>
 
-  <!-- DASHBOARD -->
   <div id="telaDashboard" class="centralContainer" style="display:none">
     <div class="container">
       <div class="card">
@@ -112,10 +115,6 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
           <div class="cardDash" onclick="filtrarPeriodo('pendentes')"><h2 id="dashPendentes">0</h2>Pendentes</div>
           <div class="cardDash" onclick="filtrarPeriodo('total')"><h2 id="dashTotal">0</h2>Total</div>
         </div>
-        <br>
-        <label>Consultar por Data</label>
-        <input type="date" id="filtroData">
-        <button class="botao" onclick="filtrarPeriodo('data')">Consultar</button>
       </div>
 
       <div class="card" style="margin-top:25px">
@@ -134,208 +133,361 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
 <div id="notificacao"></div>
 
 <script>
-const API="https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec";
-let usuarios=[], funcionarios=[], registros=[], usuarioAtual="";
+const API = "https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec";
 
-/* CARREGAR DADOS */
+let usuarios = [];
+let funcionarios = [];
+let registros = [];
+let usuarioAtual = "";
+let perfilAtual = "";
+
 async function carregar(){
-  usuarios = await fetch(API+"?acao=usuarios").then(r=>r.json());
-  funcionarios = await fetch(API+"?acao=base").then(r=>r.json());
-  registros = await fetch(API+"?acao=registros").then(r=>r.json());
+  try{
+    usuarios = await fetch(API + "?acao=usuarios").then(r => r.json());
+    funcionarios = await fetch(API + "?acao=base").then(r => r.json());
+    registros = await fetch(API + "?acao=registros").then(r => r.json());
+    atualizarDashboard(registros);
+  }catch(e){
+    mostrarNotificacao("Erro ao carregar dados", "#d93025");
+  }
+}
+
+window.onload = async function(){
+  await carregar();
+
+  let u = localStorage.getItem("usuarioLogado");
+  let p = localStorage.getItem("perfilLogado");
+
+  if(u){
+    usuarioAtual = u;
+    perfilAtual = p || "";
+    document.getElementById("loginContainer").style.display = "none";
+    document.getElementById("painel").style.display = "block";
+    document.getElementById("usuarioLogado").innerText = usuarioAtual;
+    configurarPermissoes();
+    mostrarTela("registro");
+  }
+};
+
+function configurarPermissoes(){
+  const btnDashboard = document.getElementById("btnDashboard");
+  if(perfilAtual === "ADMIN"){
+    btnDashboard.style.display = "inline-block";
+  }else{
+    btnDashboard.style.display = "none";
+    document.getElementById("telaDashboard").style.display = "none";
+    document.getElementById("telaRegistro").style.display = "flex";
+  }
+}
+
+function mostrarTela(tela){
+  document.getElementById("telaRegistro").style.display = "none";
+  document.getElementById("telaDashboard").style.display = "none";
+
+  if(tela === "registro"){
+    document.getElementById("telaRegistro").style.display = "flex";
+  }
+
+  if(tela === "dashboard"){
+    if(perfilAtual !== "ADMIN"){
+      mostrarNotificacao("Acesso permitido somente para admins", "#d93025");
+      document.getElementById("telaRegistro").style.display = "flex";
+      return;
+    }
+    document.getElementById("telaDashboard").style.display = "flex";
+  }
+}
+
+function abrirDashboard(){
+  if(perfilAtual !== "ADMIN"){
+    mostrarNotificacao("Acesso permitido somente para admins", "#d93025");
+    return;
+  }
+  mostrarTela("dashboard");
   atualizarDashboard(registros);
 }
 
-/* MANTER LOGIN */
-window.onload=function(){
-  let u=localStorage.getItem("usuarioLogado");
-  if(u){
-    usuarioAtual=u;
-    document.getElementById("loginContainer").style.display="none";
-    document.getElementById("painel").style.display="block";
-    document.getElementById("usuarioLogado").innerText=u;
-  }
-}
-
-/* TROCAR TELAS */
-function mostrarTela(tela){
-  document.getElementById("telaRegistro").style.display="none";
-  document.getElementById("telaDashboard").style.display="none";
-  if(tela=="registro") document.getElementById("telaRegistro").style.display="flex";
-  if(tela=="dashboard") document.getElementById("telaDashboard").style.display="flex";
-}
-
-/* LOGIN */
 function login(){
-  let u=document.getElementById("usuario").value.trim();
-  let s=document.getElementById("senha").value.trim();
-  let ok=usuarios.find(x=>x.USUARIO==u && x.SENHA==s);
+  let u = document.getElementById("usuario").value.trim();
+  let s = document.getElementById("senha").value.trim();
+
+  let ok = usuarios.find(x => x.USUARIO == u && x.SENHA == s);
+
   if(ok){
-    usuarioAtual=ok.NOME;
-    localStorage.setItem("usuarioLogado",usuarioAtual);
-    document.getElementById("loginContainer").style.display="none";
-    document.getElementById("painel").style.display="block";
-    document.getElementById("usuarioLogado").innerText=usuarioAtual;
+    usuarioAtual = ok.NOME || ok.USUARIO;
+    perfilAtual = (ok.PERFIL || "USER").toUpperCase();
+
+    localStorage.setItem("usuarioLogado", usuarioAtual);
+    localStorage.setItem("perfilLogado", perfilAtual);
+
+    document.getElementById("loginContainer").style.display = "none";
+    document.getElementById("painel").style.display = "block";
+    document.getElementById("usuarioLogado").innerText = usuarioAtual;
+
+    configurarPermissoes();
+    mostrarTela("registro");
   }else{
-    mostrarNotificacao("Login ou senha inválidos","#d93025");
+    mostrarNotificacao("Login ou senha inválidos", "#d93025");
   }
 }
 
-/* LOGOUT */
 function logout(){
   localStorage.removeItem("usuarioLogado");
-  document.getElementById("painel").style.display="none";
-  document.getElementById("loginContainer").style.display="flex";
+  localStorage.removeItem("perfilLogado");
+  usuarioAtual = "";
+  perfilAtual = "";
+  document.getElementById("painel").style.display = "none";
+  document.getElementById("loginContainer").style.display = "flex";
+  document.getElementById("usuario").value = "";
+  document.getElementById("senha").value = "";
 }
 
-/* AUTOPREENCHIMENTO */
 function buscarFuncionario(){
-  let mat=document.getElementById("matricula").value.trim();
-  let f=funcionarios.find(x=>x.MATRICULA==mat);
+  let mat = document.getElementById("matricula").value.trim();
+  let f = funcionarios.find(x => String(x.MATRICULA).trim() === mat);
+
   if(f){
-    document.getElementById("nome").value=f.NOME;
-    document.getElementById("cargo").value=f.CARGO;
+    document.getElementById("nome").value = f.NOME || "";
+    document.getElementById("cargo").value = f.CARGO || "";
   }else{
-    document.getElementById("nome").value="";
-    document.getElementById("cargo").value="";
+    document.getElementById("nome").value = "";
+    document.getElementById("cargo").value = "";
   }
 }
 
-/* REGISTRAR */
-async function registrar(){
-  let matricula=document.getElementById("matricula").value;
-  let nome=document.getElementById("nome").value;
-  let cargo=document.getElementById("cargo").value;
-  let tipo=document.getElementById("tipo").value;
-  let status=document.getElementById("status").value;
-  let descricao=document.getElementById("descricao").value;
+function focarProximoCampo(id){
+  document.getElementById(id).focus();
+}
 
-  if(!matricula||!tipo||!status||!descricao){
-    mostrarNotificacao("Preencha os campos obrigatórios","#d93025");
+async function registrar(){
+  let matricula = document.getElementById("matricula").value.trim();
+  let nome = document.getElementById("nome").value.trim();
+  let cargo = document.getElementById("cargo").value.trim();
+  let tipo = document.getElementById("tipo").value.trim();
+  let status = document.getElementById("status").value.trim();
+  let descricao = document.getElementById("descricao").value.trim();
+
+  if(!matricula || !tipo || !status || !descricao){
+    mostrarNotificacao("Preencha os campos obrigatórios", "#d93025");
     return;
   }
 
   let btn = document.getElementById("registrarBtn");
-  btn.disabled=true;
-  btn.innerText="Registrando...";
+  btn.disabled = true;
+  btn.innerText = "Registrando...";
 
   try{
-    let res = await fetch(API,{
-      method:"POST",
-      body:JSON.stringify({matricula,nome,cargo,tipo,status,descricao,analista:usuarioAtual})
+    let res = await fetch(API, {
+      method: "POST",
+      body: JSON.stringify({
+        matricula,
+        nome,
+        cargo,
+        tipo,
+        status,
+        descricao,
+        analista: usuarioAtual
+      })
     });
+
     let data = await res.json();
+
     if(data && data.ok){
       mostrarNotificacao("Atendimento registrado com sucesso");
-      document.getElementById("matricula").value="";
-      document.getElementById("nome").value="";
-      document.getElementById("cargo").value="";
-      document.getElementById("tipo").value="";
-      document.getElementById("status").value="";
-      document.getElementById("descricao").value="";
+      document.getElementById("matricula").value = "";
+      document.getElementById("nome").value = "";
+      document.getElementById("cargo").value = "";
+      document.getElementById("tipo").value = "";
+      document.getElementById("status").value = "";
+      document.getElementById("descricao").value = "";
+      await carregar();
+      document.getElementById("matricula").focus();
     }else{
-      mostrarNotificacao("Erro ao registrar","#d93025");
-      btn.innerText="Registrando...";
-      return;
+      mostrarNotificacao("Erro ao registrar", "#d93025");
     }
   }catch(e){
-    mostrarNotificacao("Erro ao registrar","#d93025");
-    btn.innerText="Registrando...";
-    return;
+    mostrarNotificacao("Erro ao registrar", "#d93025");
   }
 
-  btn.disabled=false;
-  btn.innerText="Registrar Atendimento";
-  carregar();
+  btn.disabled = false;
+  btn.innerText = "Registrar Atendimento";
 }
 
-/* UTILS */
-function parseData(d){ // yyyy/mm/dd
-  if(!d) return null;
-  let p=d.split("/");
-  if(p.length==3) return new Date(p[0],p[1]-1,p[2]);
-  return new Date(d);
+function normalizarData(valor){
+  if(!valor) return null;
+
+  if(valor instanceof Date && !isNaN(valor)){
+    return new Date(valor.getFullYear(), valor.getMonth(), valor.getDate());
+  }
+
+  let texto = String(valor).trim();
+
+  if(texto.includes("T")){
+    let d = new Date(texto);
+    if(!isNaN(d)) return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  if(texto.includes("/")){
+    let p = texto.split("/");
+    if(p.length === 3){
+      if(p[0].length === 4){
+        return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+      }else{
+        return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0]));
+      }
+    }
+  }
+
+  if(texto.includes("-")){
+    let p = texto.split("-");
+    if(p.length === 3){
+      return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+    }
+  }
+
+  let d = new Date(texto);
+  if(!isNaN(d)) return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+  return null;
 }
 
-/* ATUALIZAR DASHBOARD */
+function inicioDaSemana(data){
+  let d = new Date(data);
+  let dia = d.getDay();
+  let diff = dia === 0 ? -6 : 1 - dia;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function fimDaSemana(data){
+  let d = inicioDaSemana(data);
+  d.setDate(d.getDate() + 6);
+  d.setHours(23,59,59,999);
+  return d;
+}
+
 function atualizarDashboard(lista){
   let hoje = new Date();
-  document.getElementById("dashHoje").innerText = lista.filter(r=>r.DATA===formatData(hoje)).length;
-  document.getElementById("dashSemana").innerText = lista.filter(r=>{
-    if(!r.DATA) return false;
-    let dt = new Date(r.DATA);
-    return dt >= new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()-7);
+  hoje.setHours(0,0,0,0);
+
+  let inicioSemana = inicioDaSemana(hoje);
+  let fimSemanaVar = fimDaSemana(hoje);
+
+  document.getElementById("dashHoje").innerText = lista.filter(r => {
+    let dt = normalizarData(r.DATA);
+    return dt && dt.getTime() === hoje.getTime();
   }).length;
-  document.getElementById("dashMes").innerText = lista.filter(r=>{
-    if(!r.DATA) return false;
-    let dt = new Date(r.DATA);
-    return dt.getMonth()===hoje.getMonth() && dt.getFullYear()===hoje.getFullYear();
+
+  document.getElementById("dashSemana").innerText = lista.filter(r => {
+    let dt = normalizarData(r.DATA);
+    return dt && dt >= inicioSemana && dt <= fimSemanaVar;
   }).length;
-  document.getElementById("dashPendentes").innerText = lista.filter(r=>r.STATUS==="PENDENTE").length;
+
+  document.getElementById("dashMes").innerText = lista.filter(r => {
+    let dt = normalizarData(r.DATA);
+    return dt && dt.getMonth() === hoje.getMonth() && dt.getFullYear() === hoje.getFullYear();
+  }).length;
+
+  document.getElementById("dashPendentes").innerText = lista.filter(r =>
+    String(r.STATUS || "").trim().toUpperCase() === "PENDENTE"
+  ).length;
+
   document.getElementById("dashTotal").innerText = lista.length;
 
   mostrarTipos(lista);
   mostrarRanking(lista);
 }
 
-/* FORMATO yyyy/mm/dd */
-function formatData(d){ 
-  return `${d.getFullYear()}/${("0"+(d.getMonth()+1)).slice(-2)}/${("0"+d.getDate()).slice(-2)}`;
-}
-
-/* FILTRAGEM */
 function filtrarPeriodo(tipo){
-  let lista=[...registros];
-  let hoje=new Date();
-  if(tipo==="pendentes") lista = lista.filter(r=>r.STATUS==="PENDENTE");
-  if(tipo==="hoje") lista = lista.filter(r=>r.DATA===formatData(hoje));
-  if(tipo==="semana") lista = lista.filter(r=>{
-    if(!r.DATA) return false;
-    let dt=new Date(r.DATA);
-    return dt >= new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()-7);
-  });
-  if(tipo==="mes") lista = lista.filter(r=>{
-    if(!r.DATA) return false;
-    let dt=new Date(r.DATA);
-    return dt.getMonth()===hoje.getMonth() && dt.getFullYear()===hoje.getFullYear();
-  });
-  if(tipo==="data"){
-    let d=document.getElementById("filtroData").value;
-    if(!d){ mostrarNotificacao("Selecione uma data","#d93025"); return; }
-    let dt = new Date(d);
-    let str=formatData(dt);
-    lista = lista.filter(r=>r.DATA===str);
+  let lista = [...registros];
+  let hoje = new Date();
+  hoje.setHours(0,0,0,0);
+
+  let inicioSemana = inicioDaSemana(hoje);
+  let fimSemanaVar = fimDaSemana(hoje);
+
+  if(tipo === "pendentes"){
+    lista = lista.filter(r => String(r.STATUS || "").trim().toUpperCase() === "PENDENTE");
   }
+
+  if(tipo === "hoje"){
+    lista = lista.filter(r => {
+      let dt = normalizarData(r.DATA);
+      return dt && dt.getTime() === hoje.getTime();
+    });
+  }
+
+  if(tipo === "semana"){
+    lista = lista.filter(r => {
+      let dt = normalizarData(r.DATA);
+      return dt && dt >= inicioSemana && dt <= fimSemanaVar;
+    });
+  }
+
+  if(tipo === "mes"){
+    lista = lista.filter(r => {
+      let dt = normalizarData(r.DATA);
+      return dt && dt.getMonth() === hoje.getMonth() && dt.getFullYear() === hoje.getFullYear();
+    });
+  }
+
+  if(tipo === "total"){
+    lista = [...registros];
+  }
+
   atualizarDashboard(lista);
 }
 
-/* LISTAGEM TIPOS */
 function mostrarTipos(lista){
-  let tipos={};
-  lista.forEach(r=>{let t=r.TIPO||"OUTROS"; tipos[t] = (tipos[t]||0)+1; });
-  let html="";
-  for(let t in tipos) html+=`<div class="tipoLinha"><span>${t}</span><span>${tipos[t]}</span></div>`;
+  let tipos = {};
+  lista.forEach(r => {
+    let t = (r.TIPO || "OUTROS").trim();
+    tipos[t] = (tipos[t] || 0) + 1;
+  });
+
+  let entries = Object.entries(tipos).sort((a,b) => b[1] - a[1]);
+
+  let html = "";
+  if(entries.length === 0){
+    html = '<div class="tipoLinha"><span>Nenhum registro</span><span>0</span></div>';
+  }else{
+    entries.forEach(([t, qtd]) => {
+      html += `<div class="tipoLinha"><span>${t}</span><span>${qtd}</span></div>`;
+    });
+  }
+
   document.getElementById("tiposContainer").innerHTML = html;
 }
 
-/* RANKING */
 function mostrarRanking(lista){
-  let ranking={};
-  lista.forEach(r=>{let a=r.ANALISTA||"SEM ANALISTA"; ranking[a]=(ranking[a]||0)+1; });
-  let html="";
-  for(let a in ranking) html+=`<div class="rankingLinha"><span>${a}</span><span>${ranking[a]}</span></div>`;
-  document.getElementById("rankingContainer").innerHTML=html;
+  let ranking = {};
+  lista.forEach(r => {
+    let a = (r.ANALISTA || "SEM ANALISTA").trim();
+    ranking[a] = (ranking[a] || 0) + 1;
+  });
+
+  let entries = Object.entries(ranking).sort((a,b) => b[1] - a[1]);
+
+  let html = "";
+  if(entries.length === 0){
+    html = '<div class="rankingLinha"><span>Nenhum registro</span><span>0</span></div>';
+  }else{
+    entries.forEach(([a, qtd]) => {
+      html += `<div class="rankingLinha"><span>${a}</span><span>${qtd}</span></div>`;
+    });
+  }
+
+  document.getElementById("rankingContainer").innerHTML = html;
 }
 
-/* NOTIFICAÇÃO */
-function mostrarNotificacao(msg,cor="#1e4fa3"){
-  let n=document.getElementById("notificacao");
-  n.innerText=msg;
-  n.style.background=cor;
+function mostrarNotificacao(msg, cor = "#1e4fa3"){
+  let n = document.getElementById("notificacao");
+  n.innerText = msg;
+  n.style.background = cor;
   n.classList.add("show");
-  setTimeout(()=>n.classList.remove("show"),3000);
+  setTimeout(() => n.classList.remove("show"), 3000);
 }
-
-carregar();
 </script>
 </body>
 </html>
