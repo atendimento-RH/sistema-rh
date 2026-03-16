@@ -21,18 +21,98 @@ body{margin:0;font-family:Calibri;background:#f2f6fc;height:100vh;display:flex;f
 .menu button{padding:12px 28px;border:none;background:#1e4fa3;color:white;border-radius:8px;cursor:pointer;font-weight:bold;font-size:15px;}
 .menu button:hover{background:#163c7d;}
 .centralContainer{display:flex;justify-content:center;margin-top:30px;padding-bottom:30px;}
-.container{max-width:700px;width:100%;}
+.container{max-width:820px;width:100%;}
 .card{background:white;padding:35px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);}
 label{display:block;margin-top:15px;font-weight:bold;}
 input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;margin-top:5px;font-family:Calibri;box-sizing:border-box;}
 .botao{margin-top:25px;padding:14px;background:#1e4fa3;color:white;border:none;border-radius:6px;cursor:pointer;width:100%;font-weight:bold;}
 .botao:disabled{opacity:.7;cursor:not-allowed;}
 .cardsDash{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;margin-top:20px;}
-.cardDash{background:white;padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);text-align:center;width:150px;cursor:pointer;}
+.cardDash{background:white;padding:20px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.08);text-align:center;width:140px;cursor:pointer;transition:all .2s ease;border:2px solid transparent;}
 .cardDash h2{margin:0;color:#1e4fa3;font-size:32px;}
+.cardDash.ativo{border:2px solid #1e4fa3;box-shadow:0 0 0 4px rgba(30,79,163,0.12), 0 6px 20px rgba(0,0,0,0.08);transform:translateY(-2px);}
 .tipoLinha,.rankingLinha{display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;}
 #notificacao{position:fixed;top:-80px;left:50%;transform:translateX(-50%);background:#1e4fa3;color:white;padding:16px 30px;border-radius:10px;font-weight:bold;box-shadow:0 8px 25px rgba(0,0,0,0.2);transition:all .4s ease;z-index:9999;}
 #notificacao.show{top:20px;}
+
+.tabelaTipos{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  overflow:hidden;
+  border-radius:10px;
+}
+.tabelaTipos thead th{
+  background:#1e4fa3;
+  color:white;
+  text-align:left;
+  padding:12px;
+  font-size:14px;
+}
+.tabelaTipos tbody td{
+  padding:12px;
+  border-bottom:1px solid #e9edf5;
+  font-size:14px;
+}
+.tabelaTipos tbody tr:nth-child(even){
+  background:#f7faff;
+}
+.tabelaTipos tbody tr:hover{
+  background:#eef4ff;
+}
+.badgeQtd{
+  display:inline-block;
+  background:#1e4fa3;
+  color:white;
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
+.semRegistros{
+  padding:18px;
+  text-align:center;
+  background:#f7faff;
+  border:1px solid #dbe7ff;
+  border-radius:10px;
+  color:#4b5b7a;
+}
+.tabelaRanking{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  overflow:hidden;
+  border-radius:10px;
+}
+.tabelaRanking thead th{
+  background:#1e4fa3;
+  color:white;
+  text-align:left;
+  padding:12px;
+  font-size:14px;
+}
+.tabelaRanking tbody td{
+  padding:12px;
+  border-bottom:1px solid #e9edf5;
+  font-size:14px;
+}
+.tabelaRanking tbody tr:nth-child(even){
+  background:#f7faff;
+}
+.tabelaRanking tbody tr:hover{
+  background:#eef4ff;
+}
+.posicaoRank{
+  display:inline-block;
+  min-width:28px;
+  text-align:center;
+  background:#e8f0ff;
+  color:#1e4fa3;
+  padding:4px 8px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:bold;
+}
 </style>
 </head>
 <body>
@@ -109,11 +189,11 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
       <div class="card">
         <h3>Dashboard</h3>
         <div class="cardsDash">
-          <div class="cardDash" onclick="filtrarPeriodo('hoje')"><h2 id="dashHoje">0</h2>Hoje</div>
-          <div class="cardDash" onclick="filtrarPeriodo('semana')"><h2 id="dashSemana">0</h2>Semana</div>
-          <div class="cardDash" onclick="filtrarPeriodo('mes')"><h2 id="dashMes">0</h2>Mês</div>
-          <div class="cardDash" onclick="filtrarPeriodo('pendentes')"><h2 id="dashPendentes">0</h2>Pendentes</div>
-          <div class="cardDash" onclick="filtrarPeriodo('total')"><h2 id="dashTotal">0</h2>Total</div>
+          <div class="cardDash ativo" id="filtro-total" onclick="filtrarPeriodo('total')"><h2 id="dashTotal">0</h2>Total</div>
+          <div class="cardDash" id="filtro-hoje" onclick="filtrarPeriodo('hoje')"><h2 id="dashHoje">0</h2>Hoje</div>
+          <div class="cardDash" id="filtro-semana" onclick="filtrarPeriodo('semana')"><h2 id="dashSemana">0</h2>Semana</div>
+          <div class="cardDash" id="filtro-mes" onclick="filtrarPeriodo('mes')"><h2 id="dashMes">0</h2>Mês</div>
+          <div class="cardDash" id="filtro-pendentes" onclick="filtrarPeriodo('pendentes')"><h2 id="dashPendentes">0</h2>Pendentes</div>
         </div>
       </div>
 
@@ -146,6 +226,7 @@ async function carregar(){
     usuarios = await fetch(API + "?acao=usuarios").then(r => r.json());
     funcionarios = await fetch(API + "?acao=base").then(r => r.json());
     registros = await fetch(API + "?acao=registros").then(r => r.json());
+    marcarFiltroAtivo("total");
     atualizarDashboard(registros);
   }catch(e){
     mostrarNotificacao("Erro ao carregar dados", "#d93025");
@@ -267,6 +348,7 @@ function abrirDashboard(){
     return;
   }
   mostrarTela("dashboard");
+  marcarFiltroAtivo("total");
   atualizarDashboard(registros);
 }
 
@@ -432,6 +514,15 @@ function fimDaSemana(data){
   return d;
 }
 
+function marcarFiltroAtivo(tipo){
+  document.querySelectorAll(".cardDash").forEach(card => card.classList.remove("ativo"));
+
+  const cardAtivo = document.getElementById("filtro-" + tipo);
+  if(cardAtivo){
+    cardAtivo.classList.add("ativo");
+  }
+}
+
 function atualizarDashboard(lista){
   let hoje = new Date();
   hoje.setHours(0,0,0,0);
@@ -501,11 +592,13 @@ function filtrarPeriodo(tipo){
     lista = [...registros];
   }
 
+  marcarFiltroAtivo(tipo);
   atualizarDashboard(lista);
 }
 
 function mostrarTipos(lista){
   let tipos = {};
+
   lista.forEach(r => {
     let t = (r.TIPO || "OUTROS").trim();
     tipos[t] = (tipos[t] || 0) + 1;
@@ -513,14 +606,42 @@ function mostrarTipos(lista){
 
   let entries = Object.entries(tipos).sort((a,b) => b[1] - a[1]);
 
-  let html = "";
   if(entries.length === 0){
-    html = '<div class="tipoLinha"><span>Nenhum registro</span><span>0</span></div>';
-  }else{
-    entries.forEach(([t, qtd]) => {
-      html += `<div class="tipoLinha"><span>${t}</span><span>${qtd}</span></div>`;
-    });
+    document.getElementById("tiposContainer").innerHTML =
+      '<div class="semRegistros">Nenhum registro encontrado para este filtro.</div>';
+    return;
   }
+
+  let total = entries.reduce((soma, item) => soma + item[1], 0);
+
+  let html = `
+    <table class="tabelaTipos">
+      <thead>
+        <tr>
+          <th>Tipo de Atendimento</th>
+          <th>Quantidade</th>
+          <th>Participação</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  entries.forEach(([tipo, qtd]) => {
+    let perc = total ? ((qtd / total) * 100).toFixed(1).replace(".", ",") : "0,0";
+
+    html += `
+      <tr>
+        <td>${tipo}</td>
+        <td><span class="badgeQtd">${qtd}</span></td>
+        <td>${perc}%</td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
 
   document.getElementById("tiposContainer").innerHTML = html;
 }
@@ -534,14 +655,38 @@ function mostrarRanking(lista){
 
   let entries = Object.entries(ranking).sort((a,b) => b[1] - a[1]);
 
-  let html = "";
   if(entries.length === 0){
-    html = '<div class="rankingLinha"><span>Nenhum registro</span><span>0</span></div>';
-  }else{
-    entries.forEach(([a, qtd]) => {
-      html += `<div class="rankingLinha"><span>${a}</span><span>${qtd}</span></div>`;
-    });
+    document.getElementById("rankingContainer").innerHTML =
+      '<div class="semRegistros">Nenhum registro encontrado para este filtro.</div>';
+    return;
   }
+
+  let html = `
+    <table class="tabelaRanking">
+      <thead>
+        <tr>
+          <th>Posição</th>
+          <th>Analista</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  entries.forEach(([analista, qtd], i) => {
+    html += `
+      <tr>
+        <td><span class="posicaoRank">${i + 1}º</span></td>
+        <td>${analista}</td>
+        <td><span class="badgeQtd">${qtd}</span></td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
 
   document.getElementById("rankingContainer").innerHTML = html;
 }
