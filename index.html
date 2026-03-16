@@ -79,6 +79,7 @@ padding:10px 25px;
 height:80px;
 box-shadow:0 4px 12px rgba(0,0,0,0.2);
 color:white;
+box-sizing:border-box;
 }
 
 .header img{
@@ -120,13 +121,20 @@ gap:15px;
 }
 
 .menu button{
-padding:10px 25px;
+padding:12px 28px;
 border:none;
 background:#1e4fa3;
 color:white;
-border-radius:6px;
+border-radius:8px;
 cursor:pointer;
 font-weight:bold;
+font-size:15px;
+transition:0.2s;
+}
+
+.menu button:hover{
+background:#163c7d;
+transform:translateY(-2px);
 }
 
 /* CONTAINERS */
@@ -470,14 +478,20 @@ document.getElementById("erro").innerText="Usuário ou senha inválidos"
 
 document.addEventListener("keypress",function(e){
 
-if(e.key==="Enter" && document.getElementById("loginContainer").style.display!="none"){
+if(e.key==="Enter"){
 
-login()
+let painelVisivel = document.getElementById("painel").style.display=="block"
+let telaRegistro = document.getElementById("telaRegistro").style.display!="none"
+
+if(painelVisivel && telaRegistro){
+
+registrar()
+
+}
 
 }
 
 })
-
 /* LOGOUT */
 
 function logout(){
@@ -736,7 +750,9 @@ let d=document.getElementById("filtroData").value
 
 if(!d) return
 
-let dataFormatada=new Date(d).toLocaleDateString()
+let partes=d.split("-")
+
+let dataFormatada=partes[2]+"/"+partes[1]+"/"+partes[0]
 
 lista = registros.filter(r=>r.DATA==dataFormatada)
 
