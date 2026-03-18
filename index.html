@@ -8,8 +8,15 @@
 <style>
 *{box-sizing:border-box;}
 body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:100vh;display:flex;flex-direction:column;}
-#loginContainer{height:100vh;display:flex;align-items:center;justify-content:center;}
-.loginBox{background:white;padding:50px;border-radius:10px;box-shadow:0 10px 25px rgba(0,0,0,0.15);width:350px;text-align:center;font-family:Calibri, Arial, sans-serif;}
+#loginContainer{
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#1e4fa3;
+  position:relative;
+}
+.loginBox{background:white;padding:40px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.25);width:350px;text-align:center;font-family:Calibri, Arial, sans-serif;}
 .loginBox input{width:100%;padding:12px;margin-top:12px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;font-family:Calibri, Arial, sans-serif;}
 .loginBtn{margin-top:20px;width:100%;padding:12px;background:#1e4fa3;border:none;color:white;border-radius:6px;cursor:pointer;font-weight:bold;font-family:Calibri, Arial, sans-serif;}
 #painel{display:none;flex:1;}
@@ -185,7 +192,7 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
 
 <div id="loginContainer">
   <div class="loginBox">
-    <h2>Sistema RH</h2>
+  <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" style="height:70px;margin-bottom:20px;">
     <input id="usuario" placeholder="Usuário">
     <input id="senha" type="password" placeholder="Senha">
     <button class="loginBtn" onclick="login()">Entrar</button>
