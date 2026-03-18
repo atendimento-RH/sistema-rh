@@ -217,15 +217,16 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
         <input id="matricula" oninput="buscarFuncionario()">
 
         <label>Nome</label>
-        <input id="nome" readonly>
+        <input id="nome">
 
         <label>Cargo</label>
-        <input id="cargo" readonly>
+        <input id="cargo">
 
         <label>Tipo de Atendimento *</label>
         <select id="tipo">
           <option value="">-- selecione --</option>
           <option>ACERTO SALARIAL</option>
+          <option>AFASTAMENTO</option>
           <option>CADASTRO</option>
           <option>ATESTADO</option>
           <option>BENEFÍCIOS</option>
@@ -466,9 +467,6 @@ function buscarFuncionario(){
   if(f){
     document.getElementById("nome").value = f.NOME || "";
     document.getElementById("cargo").value = f.CARGO || "";
-  }else{
-    document.getElementById("nome").value = "";
-    document.getElementById("cargo").value = "";
   }
 }
 
