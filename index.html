@@ -8,6 +8,7 @@
 <style>
 *{box-sizing:border-box;}
 body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:100vh;display:flex;flex-direction:column;}
+
 #loginContainer{
   height:100vh;
   display:flex;
@@ -16,20 +17,164 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
   background:#1e4fa3;
   position:relative;
 }
-.loginBox{background:white;padding:40px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.25);width:350px;text-align:center;font-family:Calibri, Arial, sans-serif;}
-.loginBox input{width:100%;padding:12px;margin-top:12px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;font-family:Calibri, Arial, sans-serif;}
-.loginBtn{margin-top:20px;width:100%;padding:12px;background:#1e4fa3;border:none;color:white;border-radius:6px;cursor:pointer;font-weight:bold;font-family:Calibri, Arial, sans-serif;}
+
+.logoLoginTopo{
+  position:absolute;
+  top:20px;
+  right:25px;
+  height:60px;
+  border-radius:10px;
+}
+
+.loginBox{
+  background:white;
+  padding:40px;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
+  width:350px;
+  text-align:center;
+  font-family:Calibri, Arial, sans-serif;
+  animation:entrarLogin .45s ease;
+}
+
+@keyframes entrarLogin{
+  from{
+    opacity:0;
+    transform:translateY(18px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.loginLogo{
+  height:70px;
+  margin-bottom:20px;
+  border-radius:10px;
+}
+
+.inputIcone{
+  display:flex;
+  align-items:center;
+  border:1px solid #ccc;
+  border-radius:6px;
+  background:white;
+  margin-top:12px;
+  padding:0 10px;
+}
+
+.inputIcone span{
+  font-size:16px;
+  margin-right:8px;
+  color:#1e4fa3;
+  width:20px;
+  text-align:center;
+}
+
+.inputIcone input{
+  width:100%;
+  padding:12px 0;
+  border:none;
+  outline:none;
+  margin:0;
+  box-sizing:border-box;
+  font-family:Calibri, Arial, sans-serif;
+  background:transparent;
+}
+
+.loginBtn{
+  margin-top:20px;
+  width:100%;
+  padding:12px;
+  background:#1e4fa3;
+  border:none;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+  font-family:Calibri, Arial, sans-serif;
+  transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+.loginBtn:hover{
+  background:#163c7d;
+  transform:translateY(-1px);
+  box-shadow:0 6px 14px rgba(0,0,0,0.18);
+}
+
+.loginBtn:active{
+  transform:translateY(1px);
+  box-shadow:none;
+}
+
 #painel{display:none;flex:1;}
-.header{position:fixed;top:0;left:0;width:100%;background:#1e4fa3;display:flex;align-items:center;justify-content:space-between;padding:10px 25px;height:80px;box-shadow:0 4px 12px rgba(0,0,0,0.2);color:white;box-sizing:border-box;z-index:1000;font-family:Calibri, Arial, sans-serif;}
+
+.header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  background:#1e4fa3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 25px;
+  height:80px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  color:white;
+  box-sizing:border-box;
+  z-index:1000;
+  font-family:Calibri, Arial, sans-serif;
+}
+
 .header img{height:60px;border-radius:10px;}
 .headerTitulo{position:absolute;left:50%;transform:translateX(-50%);font-size:24px;font-weight:bold;}
 .userInfo{display:flex;align-items:center;gap:10px;}
-.logoutBtn{background:white;border:none;color:#1e4fa3;padding:6px 12px;border-radius:6px;cursor:pointer;font-weight:bold;font-family:Calibri, Arial, sans-serif;}
-.menu{margin-top:100px;display:flex;justify-content:center;gap:15px;flex-wrap:wrap;padding:0 16px;}
-.menu button{padding:12px 28px;border:none;background:#1e4fa3;color:white;border-radius:8px;cursor:pointer;font-weight:bold;font-size:15px;font-family:Calibri, Arial, sans-serif;}
+
+.logoutBtn{
+  background:white;
+  border:none;
+  color:#1e4fa3;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:bold;
+  font-family:Calibri, Arial, sans-serif;
+}
+
+.menu{
+  margin-top:100px;
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  flex-wrap:wrap;
+  padding:0 16px;
+}
+
+.menu button{
+  padding:12px 28px;
+  border:none;
+  background:#1e4fa3;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:15px;
+  font-family:Calibri, Arial, sans-serif;
+}
+
 .menu button:hover{background:#163c7d;}
-.centralContainer{display:flex;justify-content:center;margin-top:30px;padding:0 16px 30px;}
+
+.centralContainer{
+  display:flex;
+  justify-content:center;
+  margin-top:30px;
+  padding:0 16px 30px;
+}
+
 .container{max-width:820px;width:100%;}
+
 .card{
   background:white;
   padding:35px;
@@ -38,9 +183,37 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
   overflow:hidden;
   position:relative;
 }
-label{display:block;margin-top:15px;font-weight:bold;font-family:Calibri, Arial, sans-serif;}
-input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;margin-top:5px;font-family:Calibri, Arial, sans-serif;box-sizing:border-box;}
-.botao{margin-top:25px;padding:14px;background:#1e4fa3;color:white;border:none;border-radius:6px;cursor:pointer;width:100%;font-weight:bold;font-family:Calibri, Arial, sans-serif;}
+
+label{
+  display:block;
+  margin-top:15px;
+  font-weight:bold;
+  font-family:Calibri, Arial, sans-serif;
+}
+
+input,select{
+  width:100%;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  margin-top:5px;
+  font-family:Calibri, Arial, sans-serif;
+  box-sizing:border-box;
+}
+
+.botao{
+  margin-top:25px;
+  padding:14px;
+  background:#1e4fa3;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  width:100%;
+  font-weight:bold;
+  font-family:Calibri, Arial, sans-serif;
+}
+
 .botao:disabled{opacity:.7;cursor:not-allowed;}
 
 .cardsDash{
@@ -91,7 +264,22 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
   color:#1e4fa3;
 }
 
-#notificacao{position:fixed;top:-80px;left:50%;transform:translateX(-50%);background:#1e4fa3;color:white;padding:16px 30px;border-radius:10px;font-weight:bold;box-shadow:0 8px 25px rgba(0,0,0,0.2);transition:all .4s ease;z-index:9999;font-family:Calibri, Arial, sans-serif;}
+#notificacao{
+  position:fixed;
+  top:-80px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#1e4fa3;
+  color:white;
+  padding:16px 30px;
+  border-radius:10px;
+  font-weight:bold;
+  box-shadow:0 8px 25px rgba(0,0,0,0.2);
+  transition:all .4s ease;
+  z-index:9999;
+  font-family:Calibri, Arial, sans-serif;
+}
+
 #notificacao.show{top:20px;}
 
 .tabelaTipos,
@@ -191,10 +379,21 @@ input,select{width:100%;padding:12px;border:1px solid #ccc;border-radius:6px;mar
 <body>
 
 <div id="loginContainer">
+  <img class="logoLoginTopo" src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg">
+
   <div class="loginBox">
-  <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" style="height:70px;margin-bottom:20px;">
-    <input id="usuario" placeholder="Usuário">
-    <input id="senha" type="password" placeholder="Senha">
+    <img class="loginLogo" src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg">
+
+    <div class="inputIcone">
+      <span>👤</span>
+      <input id="usuario" placeholder="Usuário">
+    </div>
+
+    <div class="inputIcone">
+      <span>🔒</span>
+      <input id="senha" type="password" placeholder="Senha">
+    </div>
+
     <button class="loginBtn" onclick="login()">Entrar</button>
     <div id="erro"></div>
   </div>
