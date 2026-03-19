@@ -454,7 +454,6 @@ input,select{
           <div class="cardDash" id="filtro-hoje" onclick="filtrarPeriodo('hoje')"><h2 id="dashHoje">0</h2>Hoje</div>
           <div class="cardDash" id="filtro-semana" onclick="filtrarPeriodo('semana')"><h2 id="dashSemana">0</h2>Semana</div>
           <div class="cardDash" id="filtro-mes" onclick="filtrarPeriodo('mes')"><h2 id="dashMes">0</h2>Mês</div>
-          <div class="cardDash" id="filtro-pendentes" onclick="filtrarPeriodo('pendentes')"><h2 id="dashPendentes">0</h2>Pendentes</div>
         </div>
       </div>
 
@@ -523,11 +522,11 @@ window.onload = async function(){
 };
 
 function configurarEnter(){
+function configurarEnter(){
   const usuario = document.getElementById("usuario");
   const senha = document.getElementById("senha");
   const matricula = document.getElementById("matricula");
   const tipo = document.getElementById("tipo");
-  const status = document.getElementById("status");
   const descricao = document.getElementById("descricao");
 
   usuario.addEventListener("keydown", function(e){
@@ -552,13 +551,6 @@ function configurarEnter(){
   });
 
   tipo.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-      e.preventDefault();
-      document.getElementById("status").focus();
-    }
-  });
-
-  status.addEventListener("keydown", function(e){
     if(e.key === "Enter"){
       e.preventDefault();
       document.getElementById("descricao").focus();
@@ -669,10 +661,9 @@ async function registrar(){
   let nome = document.getElementById("nome").value.trim();
   let cargo = document.getElementById("cargo").value.trim();
   let tipo = document.getElementById("tipo").value.trim();
-  let status = document.getElementById("status").value.trim();
   let descricao = document.getElementById("descricao").value.trim();
 
-  if(!matricula || !tipo || !status || !descricao){
+  if(!matricula || !tipo || !descricao){
     mostrarNotificacao("Preencha os campos obrigatórios", "#d93025");
     return;
   }
@@ -689,7 +680,6 @@ async function registrar(){
         nome,
         cargo,
         tipo,
-        status,
         descricao,
         analista: usuarioAtual
       })
@@ -703,7 +693,6 @@ async function registrar(){
       document.getElementById("nome").value = "";
       document.getElementById("cargo").value = "";
       document.getElementById("tipo").value = "";
-      document.getElementById("status").value = "";
       document.getElementById("descricao").value = "";
       await carregar();
       document.getElementById("matricula").focus();
@@ -803,9 +792,6 @@ function atualizarDashboard(lista){
     return dt && dt.getMonth() === hoje.getMonth() && dt.getFullYear() === hoje.getFullYear();
   }).length;
 
-  document.getElementById("dashPendentes").innerText = lista.filter(r =>
-    String(r.STATUS || "").trim().toUpperCase() === "PENDENTE"
-  ).length;
 
   document.getElementById("dashTotal").innerText = lista.length;
 
@@ -821,9 +807,6 @@ function filtrarPeriodo(tipo){
   let inicioSemana = inicioDaSemana(hoje);
   let fimSemanaVar = fimDaSemana(hoje);
 
-  if(tipo === "pendentes"){
-    lista = lista.filter(r => String(r.STATUS || "").trim().toUpperCase() === "PENDENTE");
-  }
 
   if(tipo === "hoje"){
     lista = lista.filter(r => {
