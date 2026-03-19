@@ -435,8 +435,6 @@ input,select{
           <option>OUTROS</option>
         </select>
 
-       
-
         <label>Descrição (O que foi feito e o motivo) *</label>
         <input id="descricao">
 
@@ -522,47 +520,56 @@ window.onload = async function(){
 };
 
 function configurarEnter(){
-function configurarEnter(){
   const usuario = document.getElementById("usuario");
   const senha = document.getElementById("senha");
   const matricula = document.getElementById("matricula");
   const tipo = document.getElementById("tipo");
   const descricao = document.getElementById("descricao");
 
-  usuario.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-      e.preventDefault();
-      login();
-    }
-  });
+  if(usuario){
+    usuario.addEventListener("keydown", function(e){
+      if(e.key === "Enter"){
+        e.preventDefault();
+        login();
+      }
+    });
+  }
 
-  senha.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-      e.preventDefault();
-      login();
-    }
-  });
+  if(senha){
+    senha.addEventListener("keydown", function(e){
+      if(e.key === "Enter"){
+        e.preventDefault();
+        login();
+      }
+    });
+  }
 
-  matricula.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-      e.preventDefault();
-      document.getElementById("tipo").focus();
-    }
-  });
+  if(matricula){
+    matricula.addEventListener("keydown", function(e){
+      if(e.key === "Enter"){
+        e.preventDefault();
+        document.getElementById("tipo").focus();
+      }
+    });
+  }
 
-  tipo.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-      e.preventDefault();
-      document.getElementById("descricao").focus();
-    }
-  });
+  if(tipo){
+    tipo.addEventListener("keydown", function(e){
+      if(e.key === "Enter"){
+        e.preventDefault();
+        document.getElementById("descricao").focus();
+      }
+    });
+  }
 
-  descricao.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-      e.preventDefault();
-      registrar();
-    }
-  });
+  if(descricao){
+    descricao.addEventListener("keydown", function(e){
+      if(e.key === "Enter"){
+        e.preventDefault();
+        registrar();
+      }
+    });
+  }
 }
 
 function configurarPermissoes(){
@@ -653,6 +660,9 @@ function buscarFuncionario(){
   if(f){
     document.getElementById("nome").value = f.NOME || "";
     document.getElementById("cargo").value = f.CARGO || "";
+  }else{
+    document.getElementById("nome").value = "";
+    document.getElementById("cargo").value = "";
   }
 }
 
@@ -792,7 +802,6 @@ function atualizarDashboard(lista){
     return dt && dt.getMonth() === hoje.getMonth() && dt.getFullYear() === hoje.getFullYear();
   }).length;
 
-
   document.getElementById("dashTotal").innerText = lista.length;
 
   mostrarTipos(lista);
@@ -806,7 +815,6 @@ function filtrarPeriodo(tipo){
 
   let inicioSemana = inicioDaSemana(hoje);
   let fimSemanaVar = fimDaSemana(hoje);
-
 
   if(tipo === "hoje"){
     lista = lista.filter(r => {
