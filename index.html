@@ -508,9 +508,13 @@ function restaurarSessao(){
 
     configurarPermissoes();
     mostrarTela("registro");
-    carregarRegistros();
     return true;
   }
+
+  document.getElementById("loginContainer").style.display = "flex";
+  document.getElementById("painel").style.display = "none";
+  return false;
+}
 
   document.getElementById("loginContainer").style.display = "flex";
   document.getElementById("painel").style.display = "none";
@@ -683,26 +687,19 @@ function logout(){
 
 let timerBuscaMatricula = null;
 
-function buscarFuncionario()
-  if(mat.length < 4){
-  document.getElementById("nome").value = "";
-  document.getElementById("cargo").value = "";
-  return;
-}
-
-{
+function buscarFuncionario(){
   const mat = document.getElementById("matricula").value.trim();
+
+  if(mat.length < 4){
+    document.getElementById("nome").value = "";
+    document.getElementById("cargo").value = "";
+    return;
+  }
 
   ultimoValorMatricula = mat;
 
   if(timerBuscaMatricula){
     clearTimeout(timerBuscaMatricula);
-  }
-
-  if(!mat){
-    document.getElementById("nome").value = "";
-    document.getElementById("cargo").value = "";
-    return;
   }
 
   timerBuscaMatricula = setTimeout(async function(){
