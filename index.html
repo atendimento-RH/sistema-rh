@@ -417,7 +417,7 @@ input,select{
         <h3>Registrar Atendimento</h3>
 
         <label>Matrícula *</label>
-        <input id="matricula" oninput="buscarFuncionario()">
+        <input id="matricula" onkeyup="buscarFuncionario()">
 
         <label>Nome</label>
         <input id="nome">
@@ -520,6 +520,7 @@ function restaurarSessao(){
 window.onload = function(){
   configurarEnter();
   restaurarSessao();
+  fetch(API + "?acao=registros").catch(() => {});
 };
 
 function configurarEnter(){
@@ -683,7 +684,14 @@ function logout(){
 
 let timerBuscaMatricula = null;
 
-function buscarFuncionario(){
+function buscarFuncionario()
+  if(mat.length < 4){
+  document.getElementById("nome").value = "";
+  document.getElementById("cargo").value = "";
+  return;
+}
+
+{
   const mat = document.getElementById("matricula").value.trim();
 
   ultimoValorMatricula = mat;
