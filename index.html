@@ -103,6 +103,13 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
   box-shadow:none;
 }
 
+.loginBtn:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
 #painel{display:none;flex:1;}
 
 .header{
@@ -196,6 +203,11 @@ input,select{
   box-sizing:border-box;
 }
 
+input:disabled, select:disabled{
+  background:#f2f4f7;
+  cursor:not-allowed;
+}
+
 .botao{
   margin-top:25px;
   padding:14px;
@@ -210,6 +222,12 @@ input,select{
 }
 
 .botao:disabled{opacity:.7;cursor:not-allowed;}
+
+.infoCarregamento{
+  margin-top:10px;
+  font-size:13px;
+  color:#5b6780;
+}
 
 .cardsDash{
   display:flex;
@@ -391,8 +409,8 @@ input,select{
       <input id="senha" type="password" placeholder="Senha">
     </div>
 
-    <button class="loginBtn" onclick="login()">Entrar</button>
-    <div id="erro"></div>
+    <button class="loginBtn" id="btnLogin" onclick="login()" disabled>Carregando usuários...</button>
+    <div class="infoCarregamento" id="statusLogin">Preparando login...</div>
   </div>
 </div>
 
@@ -417,7 +435,8 @@ input,select{
         <h3>Registrar Atendimento</h3>
 
         <label>Matrícula *</label>
-        <input id="matricula" oninput="buscarFuncionario()">
+        <input id="matricula" oninput="buscarFuncionarioComDelay()" autocomplete="off" disabled placeholder="Carregando base...">
+        <div class="infoCarregamento" id="statusBase">Aguarde a base carregar.</div>
 
         <label>Nome</label>
         <input id="nome">
@@ -483,15 +502,101 @@ let registros = [];
 let usuarioAtual = "";
 let perfilAtual = "";
 
-async function carregar(){
+let usuariosCarregados = false;
+let baseCarregada = false;
+let registrosCarregados = false;
+
+let mapaFuncionarios = {};
+let timerMatricula = null;
+
+function setStatusLogin(texto){
+  const el = document.getElementById("statusLogin");
+  if(el) el.innerText = texto;
+}
+
+function setStatusBase(texto){
+  const el = document.getElementById("statusBase");
+  if(el) el.innerText = texto;
+}
+
+function habilitarLogin(){
+  const btn = document.getElementById("btnLogin");
+  btn.disabled = false;
+  btn.innerText = "Entrar";
+  setStatusLogin("Usuários carregados.");
+}
+
+function bloquearLogin(textoBotao = "Carregando usuários..."){
+  const btn = document.getElementById("btnLogin");
+  btn.disabled = true;
+  btn.innerText = textoBotao;
+}
+
+function habilitarBase(){
+  const campo = document.getElementById("matricula");
+  campo.disabled = false;
+  campo.placeholder = "";
+  setStatusBase("Base carregada.");
+}
+
+function bloquearBase(texto = "Carregando base..."){
+  const campo = document.getElementById("matricula");
+  campo.disabled = true;
+  campo.placeholder = texto;
+}
+
+async function carregarUsuarios(){
   try{
+    usuariosCarregados = false;
+    bloquearLogin("Carregando usuários...");
+    setStatusLogin("Consultando usuários...");
+
     usuarios = await fetch(API + "?acao=usuarios").then(r => r.json());
-    funcionarios = await fetch(API + "?acao=base").then(r => r.json());
-    registros = await fetch(API + "?acao=registros").then(r => r.json());
-    marcarFiltroAtivo("total");
-    atualizarDashboard(registros);
+
+    usuariosCarregados = true;
+    habilitarLogin();
   }catch(e){
-    mostrarNotificacao("Erro ao carregar dados", "#d93025");
+    usuariosCarregados = false;
+    bloquearLogin("Erro ao carregar");
+    setStatusLogin("Erro ao carregar usuários.");
+    mostrarNotificacao("Erro ao carregar usuários", "#d93025");
+  }
+}
+
+async function carregarBase(){
+  try{
+    baseCarregada = false;
+    bloquearBase("Carregando base...");
+    setStatusBase("Consultando base de funcionários...");
+
+    funcionarios = await fetch(API + "?acao=base").then(r => r.json());
+
+    mapaFuncionarios = {};
+    funcionarios.forEach(f => {
+      const mat = String(f.MATRICULA || "").trim();
+      if(mat){
+        mapaFuncionarios[mat] = f;
+      }
+    });
+
+    baseCarregada = true;
+    habilitarBase();
+  }catch(e){
+    baseCarregada = false;
+    bloquearBase("Erro ao carregar base");
+    setStatusBase("Erro ao carregar base.");
+    mostrarNotificacao("Erro ao carregar base", "#d93025");
+  }
+}
+
+async function carregarRegistros(){
+  try{
+    registrosCarregados = false;
+    registros = await fetch(API + "?acao=registros").then(r => r.json());
+    registrosCarregados = true;
+  }catch(e){
+    registrosCarregados = false;
+    mostrarNotificacao("Erro ao carregar dashboard", "#d93025");
   }
 }
 
@@ -519,8 +624,13 @@ function restaurarSessao(){
 
 window.onload = async function(){
   configurarEnter();
-  restaurarSessao();
-  await carregar();
+  const temSessao = restaurarSessao();
+
+  await carregarUsuarios();
+
+  if(temSessao){
+    await carregarBase();
+  }
 };
 
 function configurarEnter(){
@@ -606,19 +716,38 @@ function mostrarTela(tela){
   }
 }
 
-function abrirDashboard(){
+async function abrirDashboard(){
   if((perfilAtual || "").toUpperCase() !== "ADMIN"){
     mostrarNotificacao("Acesso permitido somente para admins", "#d93025");
     return;
   }
+
+  if(!registrosCarregados){
+    await carregarRegistros();
+  }
+
   mostrarTela("dashboard");
   marcarFiltroAtivo("total");
   atualizarDashboard(registros);
 }
 
-function login(){
+async function login(){
   let u = document.getElementById("usuario").value.trim();
   let s = document.getElementById("senha").value.trim();
+  const btn = document.getElementById("btnLogin");
+
+  if(!u || !s){
+    mostrarNotificacao("Preencha usuário e senha", "#d93025");
+    return;
+  }
+
+  if(!usuariosCarregados){
+    mostrarNotificacao("Usuários ainda carregando", "#d93025");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerText = "Entrando...";
 
   let ok = usuarios.find(x =>
     String(x.USUARIO || "").trim() === u &&
@@ -638,9 +767,18 @@ function login(){
 
     configurarPermissoes();
     mostrarTela("registro");
+
+    await carregarBase();
+
+    if(perfilAtual === "ADMIN"){
+      registrosCarregados = false;
+    }
   }else{
     mostrarNotificacao("Login ou senha inválidos", "#d93025");
   }
+
+  btn.disabled = false;
+  btn.innerText = "Entrar";
 }
 
 function logout(){
@@ -649,17 +787,48 @@ function logout(){
 
   usuarioAtual = "";
   perfilAtual = "";
+  funcionarios = [];
+  registros = [];
+  mapaFuncionarios = {};
+  baseCarregada = false;
+  registrosCarregados = false;
 
   document.getElementById("painel").style.display = "none";
   document.getElementById("loginContainer").style.display = "flex";
 
   document.getElementById("usuario").value = "";
   document.getElementById("senha").value = "";
+  document.getElementById("matricula").value = "";
+  document.getElementById("nome").value = "";
+  document.getElementById("cargo").value = "";
+  document.getElementById("tipo").value = "";
+  document.getElementById("descricao").value = "";
+
+  bloquearBase("Carregando base...");
+  setStatusBase("Aguarde a base carregar.");
+
+  carregarUsuarios();
+}
+
+function buscarFuncionarioComDelay(){
+  clearTimeout(timerMatricula);
+  timerMatricula = setTimeout(() => {
+    buscarFuncionario();
+  }, 120);
 }
 
 function buscarFuncionario(){
+  if(!baseCarregada) return;
+
   let mat = document.getElementById("matricula").value.trim();
-  let f = funcionarios.find(x => String(x.MATRICULA).trim() === mat);
+
+  if(!mat){
+    document.getElementById("nome").value = "";
+    document.getElementById("cargo").value = "";
+    return;
+  }
+
+  let f = mapaFuncionarios[mat];
 
   if(f){
     document.getElementById("nome").value = f.NOME || "";
@@ -679,6 +848,11 @@ async function registrar(){
 
   if(!matricula || !tipo || !descricao){
     mostrarNotificacao("Preencha os campos obrigatórios", "#d93025");
+    return;
+  }
+
+  if(!baseCarregada){
+    mostrarNotificacao("Base ainda carregando", "#d93025");
     return;
   }
 
@@ -703,12 +877,21 @@ async function registrar(){
 
     if(data && data.ok){
       mostrarNotificacao("Atendimento registrado com sucesso");
+
       document.getElementById("matricula").value = "";
       document.getElementById("nome").value = "";
       document.getElementById("cargo").value = "";
       document.getElementById("tipo").value = "";
       document.getElementById("descricao").value = "";
-      await carregar();
+
+      if((perfilAtual || "").toUpperCase() === "ADMIN" && registrosCarregados){
+        await carregarRegistros();
+
+        if(document.getElementById("telaDashboard").style.display !== "none"){
+          atualizarDashboard(registros);
+        }
+      }
+
       document.getElementById("matricula").focus();
     }else{
       mostrarNotificacao("Erro ao registrar", "#d93025");
