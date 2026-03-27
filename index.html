@@ -417,7 +417,7 @@ input,select{
         <h3>Registrar Atendimento</h3>
 
         <label>Matrícula *</label>
-        <input id="matricula" onkeyup="buscarFuncionario()">
+        <input id="matricula" oninput="buscarFuncionario()">
 
         <label>Nome</label>
         <input id="nome">
@@ -477,16 +477,17 @@ input,select{
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec";
 
+let usuarios = [];
+let funcionarios = [];
 let registros = [];
 let usuarioAtual = "";
 let perfilAtual = "";
-let buscandoMatricula = false;
-let ultimoValorMatricula = "";
 
-async function carregarRegistros(){
+async function carregar(){
   try{
+    usuarios = await fetch(API + "?acao=usuarios").then(r => r.json());
+    funcionarios = await fetch(API + "?acao=base").then(r => r.json());
     registros = await fetch(API + "?acao=registros").then(r => r.json());
-    if(!Array.isArray(registros)) registros = [];
     marcarFiltroAtivo("total");
     atualizarDashboard(registros);
   }catch(e){
@@ -516,9 +517,10 @@ function restaurarSessao(){
   return false;
 }
 
-window.onload = function(){
+window.onload = async function(){
   configurarEnter();
   restaurarSessao();
+  await carregar();
 };
 
 function configurarEnter(){
@@ -601,7 +603,6 @@ function mostrarTela(tela){
       return;
     }
     document.getElementById("telaDashboard").style.display = "flex";
-    carregarRegistros();
   }
 }
 
@@ -615,53 +616,30 @@ function abrirDashboard(){
   atualizarDashboard(registros);
 }
 
-async function login(){
+function login(){
   let u = document.getElementById("usuario").value.trim();
   let s = document.getElementById("senha").value.trim();
-  const btn = document.querySelector(".loginBtn");
 
-  if(!u || !s){
-    mostrarNotificacao("Preencha usuário e senha", "#d93025");
-    return;
-  }
+  let ok = usuarios.find(x =>
+    String(x.USUARIO || "").trim() === u &&
+    String(x.SENHA || "").trim() === s
+  );
 
-  btn.disabled = true;
-  btn.innerText = "Entrando...";
+  if(ok){
+    usuarioAtual = ok.NOME || ok.USUARIO;
+    perfilAtual = (ok.PERFIL || "USER").toUpperCase();
 
-  try{
-    const res = await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        acao: "login",
-        usuario: u,
-        senha: s
-      })
-    });
+    localStorage.setItem("usuarioLogado", usuarioAtual);
+    localStorage.setItem("perfilLogado", perfilAtual);
 
-    const data = await res.json();
+    document.getElementById("loginContainer").style.display = "none";
+    document.getElementById("painel").style.display = "block";
+    document.getElementById("usuarioLogado").innerText = usuarioAtual;
 
-    if(data && data.ok){
-      usuarioAtual = data.nome || data.usuario || u;
-      perfilAtual = (data.perfil || "USER").toUpperCase();
-
-      localStorage.setItem("usuarioLogado", usuarioAtual);
-      localStorage.setItem("perfilLogado", perfilAtual);
-
-      document.getElementById("loginContainer").style.display = "none";
-      document.getElementById("painel").style.display = "block";
-      document.getElementById("usuarioLogado").innerText = usuarioAtual;
-
-      configurarPermissoes();
-      mostrarTela("registro");
-    }else{
-      mostrarNotificacao((data && data.mensagem) || "Login ou senha inválidos", "#d93025");
-    }
-  }catch(e){
-    mostrarNotificacao("Erro ao realizar login", "#d93025");
-  }finally{
-    btn.disabled = false;
-    btn.innerText = "Entrar";
+    configurarPermissoes();
+    mostrarTela("registro");
+  }else{
+    mostrarNotificacao("Login ou senha inválidos", "#d93025");
   }
 }
 
@@ -679,51 +657,17 @@ function logout(){
   document.getElementById("senha").value = "";
 }
 
-let timerBuscaMatricula = null;
-
 function buscarFuncionario(){
-  const mat = document.getElementById("matricula").value.trim();
+  let mat = document.getElementById("matricula").value.trim();
+  let f = funcionarios.find(x => String(x.MATRICULA).trim() === mat);
 
-  if(mat.length < 4){
+  if(f){
+    document.getElementById("nome").value = f.NOME || "";
+    document.getElementById("cargo").value = f.CARGO || "";
+  }else{
     document.getElementById("nome").value = "";
     document.getElementById("cargo").value = "";
-    return;
   }
-
-  ultimoValorMatricula = mat;
-
-  if(timerBuscaMatricula){
-    clearTimeout(timerBuscaMatricula);
-  }
-
-  timerBuscaMatricula = setTimeout(async function(){
-    if(buscandoMatricula) return;
-
-    buscandoMatricula = true;
-
-    try{
-      const res = await fetch(API + "?acao=buscarFuncionario&matricula=" + encodeURIComponent(mat));
-      const data = await res.json();
-
-      if(document.getElementById("matricula").value.trim() !== mat){
-        buscandoMatricula = false;
-        return;
-      }
-
-      if(data && data.ok){
-        document.getElementById("nome").value = data.nome || "";
-        document.getElementById("cargo").value = data.cargo || "";
-      }else{
-        document.getElementById("nome").value = "";
-        document.getElementById("cargo").value = "";
-      }
-    }catch(e){
-      document.getElementById("nome").value = "";
-      document.getElementById("cargo").value = "";
-    }
-
-    buscandoMatricula = false;
-  }, 250);
 }
 
 async function registrar(){
@@ -745,9 +689,7 @@ async function registrar(){
   try{
     let res = await fetch(API, {
       method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
-        acao: "registrar",
         matricula,
         nome,
         cargo,
@@ -766,13 +708,10 @@ async function registrar(){
       document.getElementById("cargo").value = "";
       document.getElementById("tipo").value = "";
       document.getElementById("descricao").value = "";
-     document.getElementById("matricula").focus();
-
-if(document.getElementById("telaDashboard").style.display === "flex"){
-  carregarRegistros();
-}
+      await carregar();
+      document.getElementById("matricula").focus();
     }else{
-      mostrarNotificacao((data && data.mensagem) || "Erro ao registrar", "#d93025");
+      mostrarNotificacao("Erro ao registrar", "#d93025");
     }
   }catch(e){
     mostrarNotificacao("Erro ao registrar", "#d93025");
@@ -846,8 +785,6 @@ function marcarFiltroAtivo(tipo){
 }
 
 function atualizarDashboard(lista){
-  lista = Array.isArray(lista) ? lista : [];
-
   let hoje = new Date();
   hoje.setHours(0,0,0,0);
 
