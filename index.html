@@ -516,11 +516,6 @@ function restaurarSessao(){
   return false;
 }
 
-  document.getElementById("loginContainer").style.display = "flex";
-  document.getElementById("painel").style.display = "none";
-  return false;
-}
-
 window.onload = function(){
   configurarEnter();
   restaurarSessao();
@@ -772,8 +767,11 @@ async function registrar(){
       document.getElementById("cargo").value = "";
       document.getElementById("tipo").value = "";
       document.getElementById("descricao").value = "";
-      document.getElementById("matricula").focus();
-      carregarRegistros();
+     document.getElementById("matricula").focus();
+
+if(document.getElementById("telaDashboard").style.display === "flex"){
+  carregarRegistros();
+}
     }else{
       mostrarNotificacao((data && data.mensagem) || "Erro ao registrar", "#d93025");
     }
