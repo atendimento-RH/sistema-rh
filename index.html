@@ -2,30 +2,64 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1e4fa3">
 <title>Painel de Atendimentos RH</title>
 <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/1/1a/Logomarca_da_Prefeitura_do_Rio_de_Janeiro_na_vertical_lan%C3%A7ada_em_2025.png">
 
 <style>
 *{box-sizing:border-box;}
-body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:100vh;display:flex;flex-direction:column;}
+
+:root{
+  --brand:#1e4fa3;
+  --brand-2:#163c7d;
+  --bg:#f2f6fc;
+  --text:#0e1b33;
+  --muted:#4b5b7a;
+  --danger:#d93025;
+  --card:#ffffff;
+  --ring:rgba(30,79,163,0.35);
+}
+
+body{
+  margin:0;
+  font-family:"Segoe UI", Calibri, Arial, sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 700px at 20% -10%, rgba(30,79,163,0.12), transparent 60%),
+    radial-gradient(900px 600px at 90% 10%, rgba(22,60,125,0.10), transparent 55%),
+    var(--bg);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+a, button, input, select{font-family:inherit;}
+
+:focus-visible{
+  outline:3px solid var(--ring);
+  outline-offset:2px;
+}
 
 #loginContainer{
   height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#1e4fa3;
+  background:
+    radial-gradient(900px 600px at 15% 10%, rgba(255,255,255,0.20), transparent 60%),
+    radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,0.14), transparent 55%),
+    var(--brand);
   position:relative;
 }
 
 .loginBox{
-  background:white;
+  background:var(--card);
   padding:45px 40px;
   border-radius:12px;
   box-shadow:0 10px 30px rgba(0,0,0,0.25);
-  width:400px;
+  width:min(400px, 92vw);
   text-align:center;
-  font-family:Calibri, Arial, sans-serif;
   animation:entrarLogin .45s ease;
 }
 
@@ -51,7 +85,7 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
   align-items:center;
   border:1px solid #ccc;
   border-radius:6px;
-  background:white;
+  background:var(--card);
   margin-top:12px;
   padding:0 10px;
   height:38px;
@@ -60,7 +94,7 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
 .inputIcone span{
   font-size:16px;
   margin-right:8px;
-  color:#1e4fa3;
+  color:var(--brand);
   width:20px;
   text-align:center;
 }
@@ -82,18 +116,17 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
   width:100%;
   padding:10px;
   font-size:14px;
-  background:#1e4fa3;
+  background:var(--brand);
   border:none;
   color:white;
   border-radius:6px;
   cursor:pointer;
   font-weight:bold;
-  font-family:Calibri, Arial, sans-serif;
   transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 
 .loginBtn:hover{
-  background:#163c7d;
+  background:var(--brand-2);
   transform:translateY(-1px);
   box-shadow:0 6px 14px rgba(0,0,0,0.18);
 }
@@ -103,6 +136,27 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
   box-shadow:none;
 }
 
+.loginBtn:disabled{
+  opacity:.85;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
+#loginStatus{
+  margin-top:10px;
+  font-size:12px;
+  color:var(--muted);
+  min-height:16px;
+}
+
+#erro{
+  margin-top:10px;
+  font-size:12px;
+  color:var(--danger);
+  min-height:16px;
+}
+
 #painel{display:none;flex:1;}
 
 .header{
@@ -110,7 +164,7 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
   top:0;
   left:0;
   width:100%;
-  background:#1e4fa3;
+  background:var(--brand);
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -120,7 +174,6 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
   color:white;
   box-sizing:border-box;
   z-index:1000;
-  font-family:Calibri, Arial, sans-serif;
 }
 
 .header img{height:60px;border-radius:10px;}
@@ -130,12 +183,11 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
 .logoutBtn{
   background:white;
   border:none;
-  color:#1e4fa3;
+  color:var(--brand);
   padding:6px 12px;
   border-radius:6px;
   cursor:pointer;
   font-weight:bold;
-  font-family:Calibri, Arial, sans-serif;
 }
 
 .menu{
@@ -150,16 +202,15 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
 .menu button{
   padding:12px 28px;
   border:none;
-  background:#1e4fa3;
+  background:var(--brand);
   color:white;
   border-radius:8px;
   cursor:pointer;
   font-weight:bold;
   font-size:15px;
-  font-family:Calibri, Arial, sans-serif;
 }
 
-.menu button:hover{background:#163c7d;}
+.menu button:hover{background:var(--brand-2);}
 
 .centralContainer{
   display:flex;
@@ -171,7 +222,7 @@ body{margin:0;font-family:Calibri, Arial, sans-serif;background:#f2f6fc;height:1
 .container{max-width:820px;width:100%;}
 
 .card{
-  background:white;
+  background:var(--card);
   padding:35px;
   border-radius:10px;
   box-shadow:0 6px 20px rgba(0,0,0,0.08);
@@ -183,7 +234,6 @@ label{
   display:block;
   margin-top:15px;
   font-weight:bold;
-  font-family:Calibri, Arial, sans-serif;
 }
 
 input,select{
@@ -192,21 +242,19 @@ input,select{
   border:1px solid #ccc;
   border-radius:6px;
   margin-top:5px;
-  font-family:Calibri, Arial, sans-serif;
   box-sizing:border-box;
 }
 
 .botao{
   margin-top:25px;
   padding:14px;
-  background:#1e4fa3;
+  background:var(--brand);
   color:white;
   border:none;
   border-radius:6px;
   cursor:pointer;
   width:100%;
   font-weight:bold;
-  font-family:Calibri, Arial, sans-serif;
 }
 
 .botao:disabled{opacity:.7;cursor:not-allowed;}
@@ -223,7 +271,7 @@ input,select{
 }
 
 .cardDash{
-  background:white;
+  background:var(--card);
   padding:20px;
   border-radius:10px;
   box-shadow:0 6px 20px rgba(0,0,0,0.08);
@@ -240,13 +288,12 @@ input,select{
 
 .cardDash h2{
   margin:0;
-  color:#1e4fa3;
+  color:var(--brand);
   font-size:32px;
-  font-family:Calibri, Arial, sans-serif;
 }
 
 .cardDash.ativo{
-  border:2px solid #1e4fa3;
+  border:2px solid var(--brand);
   box-shadow:0 0 0 1px rgba(30,79,163,0.12);
   transform:none !important;
   position:relative;
@@ -256,7 +303,7 @@ input,select{
 }
 
 .cardDash.ativo h2{
-  color:#1e4fa3;
+  color:var(--brand);
 }
 
 #notificacao{
@@ -264,7 +311,7 @@ input,select{
   top:-80px;
   left:50%;
   transform:translateX(-50%);
-  background:#1e4fa3;
+  background:var(--brand);
   color:white;
   padding:16px 30px;
   border-radius:10px;
@@ -272,7 +319,6 @@ input,select{
   box-shadow:0 8px 25px rgba(0,0,0,0.2);
   transition:all .4s ease;
   z-index:9999;
-  font-family:Calibri, Arial, sans-serif;
 }
 
 #notificacao.show{top:20px;}
@@ -285,16 +331,14 @@ input,select{
   overflow:hidden;
   border-radius:10px;
   table-layout:fixed;
-  font-family:Calibri, Arial, sans-serif;
 }
 
 .tabelaTipos thead th,
 .tabelaRanking thead th{
-  background:#1e4fa3;
+  background:var(--brand);
   color:white;
   padding:12px;
   font-size:14px;
-  font-family:Calibri, Arial, sans-serif;
 }
 
 .tabelaTipos tbody td,
@@ -303,7 +347,6 @@ input,select{
   border-bottom:1px solid #e9edf5;
   font-size:14px;
   vertical-align:middle;
-  font-family:Calibri, Arial, sans-serif;
 }
 
 .tabelaTipos tbody tr:nth-child(even),
@@ -342,13 +385,12 @@ input,select{
   justify-content:center;
   min-width:60px;
   padding:6px 12px;
-  background:#1e4fa3;
+  background:var(--brand);
   color:white;
   border-radius:20px;
   font-size:12px;
   font-weight:bold;
   box-sizing:border-box;
-  font-family:Calibri, Arial, sans-serif;
   white-space:nowrap;
 }
 
@@ -370,8 +412,15 @@ input,select{
   background:#f7faff;
   border:1px solid #dbe7ff;
   border-radius:10px;
-  color:#4b5b7a;
-  font-family:Calibri, Arial, sans-serif;
+  color:var(--muted);
+}
+
+@media (max-width: 720px){
+  .header{padding:10px 12px;height:72px;}
+  .header img{height:52px;}
+  .headerTitulo{font-size:18px;max-width:55vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .userInfo{font-size:12px;}
+  .card{padding:22px;}
 }
 </style>
 </head>
@@ -379,26 +428,27 @@ input,select{
 
 <div id="loginContainer">
   <div class="loginBox">
-    <img class="loginLogo" src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg">
+    <img class="loginLogo" src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" alt="Logo" width="280" height="70" decoding="async" fetchpriority="high">
 
     <div class="inputIcone">
       <span>👤</span>
-      <input id="usuario" placeholder="Usuário">
+      <input id="usuario" placeholder="Usuário" autocomplete="username" autocapitalize="none" spellcheck="false" required aria-label="Usuário">
     </div>
 
     <div class="inputIcone">
       <span>🔒</span>
-      <input id="senha" type="password" placeholder="Senha">
+      <input id="senha" type="password" placeholder="Senha" autocomplete="current-password" required aria-label="Senha">
     </div>
 
-    <button class="loginBtn" onclick="login()">Entrar</button>
-    <div id="erro"></div>
+    <button class="loginBtn" id="loginBtn" type="button" onclick="login()">Entrar</button>
+    <div id="loginStatus" aria-live="polite"></div>
+    <div id="erro" role="alert" aria-live="assertive"></div>
   </div>
 </div>
 
 <div id="painel">
   <div class="header">
-    <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg">
+    <img src="https://i.ibb.co/TMDY0drG/Whats-App-Image-2026-03-13-at-14-14-50.jpg" alt="Logo" width="240" height="60" decoding="async">
     <div class="headerTitulo">Painel de Atendimentos RH</div>
     <div class="userInfo">
       USUÁRIO: <b id="usuarioLogado"></b>
@@ -407,8 +457,8 @@ input,select{
   </div>
 
   <div class="menu">
-    <button onclick="mostrarTela('registro')">Registrar Atendimento</button>
-    <button id="btnDashboard" onclick="abrirDashboard()">Dashboard</button>
+    <button type="button" onclick="mostrarTela('registro')">Registrar Atendimento</button>
+    <button type="button" id="btnDashboard" onclick="abrirDashboard()">Dashboard</button>
   </div>
 
   <div id="telaRegistro" class="centralContainer">
@@ -442,7 +492,7 @@ input,select{
         <label>Descrição (O que foi feito e o motivo) *</label>
         <input id="descricao">
 
-        <button class="botao" id="registrarBtn" onclick="registrar()">Registrar Atendimento</button>
+        <button class="botao" type="button" id="registrarBtn" onclick="registrar()">Registrar Atendimento</button>
       </div>
     </div>
   </div>
@@ -480,18 +530,106 @@ const API = "https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4F
 let usuarios = [];
 let funcionarios = [];
 let registros = [];
+let funcionariosPorMatricula = new Map();
 let usuarioAtual = "";
 let perfilAtual = "";
+let usuariosCarregados = false;
+let funcionariosCarregados = false;
+let registrosCarregados = false;
+let carregandoUsuarios = false;
+let carregandoFuncionarios = false;
+let carregandoRegistros = false;
 
-async function carregar(){
+function setLoginLoading(loading, statusMsg = ""){
+  const btn = document.getElementById("loginBtn");
+  const status = document.getElementById("loginStatus");
+  if(status) status.innerText = statusMsg;
+
+  if(btn){
+    btn.disabled = !!loading;
+    btn.dataset.label = btn.dataset.label || btn.innerText;
+    btn.innerText = loading ? "Carregando..." : btn.dataset.label;
+  }
+}
+
+function setLoginErro(msg = ""){
+  const el = document.getElementById("erro");
+  if(el) el.innerText = msg;
+}
+
+async function fetchJson(url, timeoutMs = 45000){
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try{
-    usuarios = await fetch(API + "?acao=usuarios").then(r => r.json());
-    funcionarios = await fetch(API + "?acao=base").then(r => r.json());
-    registros = await fetch(API + "?acao=registros").then(r => r.json());
-    marcarFiltroAtivo("total");
-    atualizarDashboard(registros);
-  }catch(e){
-    mostrarNotificacao("Erro ao carregar dados", "#d93025");
+    const res = await fetch(url, { signal: controller.signal, cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    return await res.json();
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+async function carregarUsuarios(){
+  if(usuariosCarregados || carregandoUsuarios) return;
+  carregandoUsuarios = true;
+  setLoginLoading(true, "Carregando usuários...");
+  try{
+    const data = await fetchJson(API + "?acao=usuarios");
+    usuarios = Array.isArray(data) ? data : [];
+    usuariosCarregados = true;
+  }catch(_e){
+    usuarios = [];
+    usuariosCarregados = false;
+    setLoginErro("Falha ao carregar usuários. Tente novamente.");
+    mostrarNotificacao("Erro ao carregar usuários", "#d93025");
+  }finally{
+    carregandoUsuarios = false;
+    setLoginLoading(false, "");
+  }
+}
+
+async function carregarFuncionarios(){
+  if(funcionariosCarregados || carregandoFuncionarios) return;
+  carregandoFuncionarios = true;
+  try{
+    const data = await fetchJson(API + "?acao=base");
+    funcionarios = Array.isArray(data) ? data : [];
+    funcionariosPorMatricula = new Map();
+    funcionarios.forEach(f => {
+      const key = String(f.MATRICULA || "").trim();
+      if(key) funcionariosPorMatricula.set(key, f);
+    });
+    funcionariosCarregados = true;
+  }catch(_e){
+    funcionarios = [];
+    funcionariosPorMatricula = new Map();
+    funcionariosCarregados = false;
+    mostrarNotificacao("Erro ao carregar base de funcionários", "#d93025");
+  }finally{
+    carregandoFuncionarios = false;
+  }
+}
+
+async function carregarRegistros(force = false){
+  if((registrosCarregados && !force) || carregandoRegistros) return;
+  carregandoRegistros = true;
+  try{
+    const data = await fetchJson(API + "?acao=registros");
+    registros = Array.isArray(data) ? data : [];
+
+    // Cacheia a data normalizada (ms) para acelerar filtros e dashboard.
+    registros.forEach(r => {
+      const dt = normalizarData(r.DATA);
+      r.__dt = dt ? dt.getTime() : null;
+    });
+
+    registrosCarregados = true;
+  }catch(_e){
+    registros = [];
+    registrosCarregados = false;
+    mostrarNotificacao("Erro ao carregar registros", "#d93025");
+  }finally{
+    carregandoRegistros = false;
   }
 }
 
@@ -514,13 +652,20 @@ function restaurarSessao(){
 
   document.getElementById("loginContainer").style.display = "flex";
   document.getElementById("painel").style.display = "none";
+  setLoginErro("");
   return false;
 }
 
 window.onload = async function(){
   configurarEnter();
-  restaurarSessao();
-  await carregar();
+  const temSessao = restaurarSessao();
+  if(temSessao){
+    await carregarFuncionarios(); // necessario para busca por matricula no registro
+  }else{
+    await carregarUsuarios(); // so carrega usuarios quando a tela de login esta ativa
+    const usuario = document.getElementById("usuario");
+    if(usuario) usuario.focus();
+  }
 };
 
 function configurarEnter(){
@@ -606,24 +751,55 @@ function mostrarTela(tela){
   }
 }
 
-function abrirDashboard(){
+async function abrirDashboard(){
   if((perfilAtual || "").toUpperCase() !== "ADMIN"){
     mostrarNotificacao("Acesso permitido somente para admins", "#d93025");
     return;
   }
   mostrarTela("dashboard");
   marcarFiltroAtivo("total");
+
+  if(!registrosCarregados){
+    mostrarNotificacao("Carregando registros...");
+    await carregarRegistros();
+  }
+
   atualizarDashboard(registros);
 }
 
-function login(){
+async function login(){
+  setLoginErro("");
+
+  if(!usuariosCarregados && !carregandoUsuarios){
+    await carregarUsuarios();
+  }
+
+  if(carregandoUsuarios){
+    setLoginErro("Aguarde carregar usuários antes de entrar.");
+    mostrarNotificacao("Aguarde carregar usuários", "#d93025");
+    return;
+  }
+
+  if(!usuariosCarregados){
+    setLoginErro("Não foi possível carregar usuários.");
+    return;
+  }
+
   let u = document.getElementById("usuario").value.trim();
   let s = document.getElementById("senha").value.trim();
 
-  let ok = usuarios.find(x =>
-    String(x.USUARIO || "").trim() === u &&
-    String(x.SENHA || "").trim() === s
-  );
+  if(!u || !s){
+    setLoginErro("Preencha usuário e senha.");
+    mostrarNotificacao("Preencha usuário e senha", "#d93025");
+    return;
+  }
+
+  const usuarioDigitado = u.toLowerCase();
+  let ok = usuarios.find(x => {
+    const usuario = String(x.USUARIO || "").trim().toLowerCase();
+    const senha = String(x.SENHA || "").trim();
+    return usuario === usuarioDigitado && senha === s;
+  });
 
   if(ok){
     usuarioAtual = ok.NOME || ok.USUARIO;
@@ -638,7 +814,14 @@ function login(){
 
     configurarPermissoes();
     mostrarTela("registro");
+
+    // Evita travar a tela inicial com carregamentos que so fazem sentido apos login.
+    if(!funcionariosCarregados) mostrarNotificacao("Carregando base de funcionários...");
+    await carregarFuncionarios();
+    const matricula = document.getElementById("matricula");
+    if(matricula) matricula.focus();
   }else{
+    setLoginErro("Login ou senha inválidos.");
     mostrarNotificacao("Login ou senha inválidos", "#d93025");
   }
 }
@@ -649,17 +832,36 @@ function logout(){
 
   usuarioAtual = "";
   perfilAtual = "";
+  usuarios = [];
+  usuariosCarregados = false;
+  funcionarios = [];
+  funcionariosPorMatricula = new Map();
+  funcionariosCarregados = false;
+  registros = [];
+  registrosCarregados = false;
 
   document.getElementById("painel").style.display = "none";
   document.getElementById("loginContainer").style.display = "flex";
 
   document.getElementById("usuario").value = "";
   document.getElementById("senha").value = "";
+  setLoginErro("");
+  document.getElementById("usuario").focus();
+
+  // Recarrega a lista de usuarios em segundo plano para acelerar o proximo login.
+  carregarUsuarios();
 }
 
+let buscarFuncionarioTimer = null;
 function buscarFuncionario(){
+  // Debounce simples para evitar trabalho a cada tecla em bases grandes.
+  if(buscarFuncionarioTimer) clearTimeout(buscarFuncionarioTimer);
+  buscarFuncionarioTimer = setTimeout(buscarFuncionarioAgora, 120);
+}
+
+function buscarFuncionarioAgora(){
   let mat = document.getElementById("matricula").value.trim();
-  let f = funcionarios.find(x => String(x.MATRICULA).trim() === mat);
+  let f = funcionariosPorMatricula.get(mat);
 
   if(f){
     document.getElementById("nome").value = f.NOME || "";
@@ -689,6 +891,9 @@ async function registrar(){
   try{
     let res = await fetch(API, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         matricula,
         nome,
@@ -699,26 +904,43 @@ async function registrar(){
       })
     });
 
-    let data = await res.json();
+    let data = null;
+    try{
+      data = await res.json();
+    }catch(_e){
+      data = null;
+    }
 
-    if(data && data.ok){
+    if(res.ok && data && data.ok){
       mostrarNotificacao("Atendimento registrado com sucesso");
       document.getElementById("matricula").value = "";
       document.getElementById("nome").value = "";
       document.getElementById("cargo").value = "";
       document.getElementById("tipo").value = "";
       document.getElementById("descricao").value = "";
-      await carregar();
       document.getElementById("matricula").focus();
+
+      // Evita refazer chamadas pesadas na planilha. So marca os registros como "desatualizados".
+      registrosCarregados = false;
+      if((perfilAtual || "").toUpperCase() === "ADMIN"){
+        const dash = document.getElementById("telaDashboard");
+        const dashVisivel = dash && dash.style.display !== "none";
+        if(dashVisivel){
+          await carregarRegistros(true);
+          marcarFiltroAtivo("total");
+          atualizarDashboard(registros);
+        }
+      }
     }else{
-      mostrarNotificacao("Erro ao registrar", "#d93025");
+      const msg = (data && (data.mensagem || data.message)) ? (data.mensagem || data.message) : "Erro ao registrar";
+      mostrarNotificacao(msg, "#d93025");
     }
   }catch(e){
     mostrarNotificacao("Erro ao registrar", "#d93025");
+  }finally{
+    btn.disabled = false;
+    btn.innerText = "Registrar Atendimento";
   }
-
-  btn.disabled = false;
-  btn.innerText = "Registrar Atendimento";
 }
 
 function normalizarData(valor){
@@ -791,53 +1013,78 @@ function atualizarDashboard(lista){
   let inicioSemana = inicioDaSemana(hoje);
   let fimSemanaVar = fimDaSemana(hoje);
 
-  document.getElementById("dashHoje").innerText = lista.filter(r => {
-    let dt = normalizarData(r.DATA);
-    return dt && dt.getTime() === hoje.getTime();
-  }).length;
+  const hojeTime = hoje.getTime();
+  const inicioSemanaTime = inicioSemana.getTime();
+  const fimSemanaTime = fimSemanaVar.getTime();
+  const inicioMesTime = new Date(hoje.getFullYear(), hoje.getMonth(), 1).getTime();
+  const proximoMesTime = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1).getTime();
 
-  document.getElementById("dashSemana").innerText = lista.filter(r => {
-    let dt = normalizarData(r.DATA);
-    return dt && dt >= inicioSemana && dt <= fimSemanaVar;
-  }).length;
+  let totalHoje = 0;
+  let totalSemana = 0;
+  let totalMes = 0;
+  let tipos = {};
+  let ranking = {};
 
-  document.getElementById("dashMes").innerText = lista.filter(r => {
-    let dt = normalizarData(r.DATA);
-    return dt && dt.getMonth() === hoje.getMonth() && dt.getFullYear() === hoje.getFullYear();
-  }).length;
+  for(const r of lista){
+    const t = typeof r.__dt === "number" ? r.__dt : null;
+    if(t !== null){
+      if(t === hojeTime) totalHoje++;
+      if(t >= inicioSemanaTime && t <= fimSemanaTime) totalSemana++;
+      if(t >= inicioMesTime && t < proximoMesTime) totalMes++;
+    }
 
+    let tipo = (r.TIPO || "OUTROS").trim();
+    tipos[tipo] = (tipos[tipo] || 0) + 1;
+
+    let analista = (r.ANALISTA || "SEM ANALISTA").trim();
+    ranking[analista] = (ranking[analista] || 0) + 1;
+  }
+
+  document.getElementById("dashHoje").innerText = totalHoje;
+  document.getElementById("dashSemana").innerText = totalSemana;
+  document.getElementById("dashMes").innerText = totalMes;
   document.getElementById("dashTotal").innerText = lista.length;
 
-  mostrarTipos(lista);
-  mostrarRanking(lista);
+  mostrarTiposContagem(tipos, lista.length);
+  mostrarRankingContagem(ranking);
 }
 
-function filtrarPeriodo(tipo){
+async function filtrarPeriodo(tipo){
+  if(!registrosCarregados){
+    mostrarNotificacao("Carregando registros...");
+    await carregarRegistros();
+  }
+
   let lista = [...registros];
   let hoje = new Date();
   hoje.setHours(0,0,0,0);
 
   let inicioSemana = inicioDaSemana(hoje);
   let fimSemanaVar = fimDaSemana(hoje);
+  const hojeTime = hoje.getTime();
+  const inicioSemanaTime = inicioSemana.getTime();
+  const fimSemanaTime = fimSemanaVar.getTime();
+  const inicioMesTime = new Date(hoje.getFullYear(), hoje.getMonth(), 1).getTime();
+  const proximoMesTime = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1).getTime();
 
   if(tipo === "hoje"){
     lista = lista.filter(r => {
-      let dt = normalizarData(r.DATA);
-      return dt && dt.getTime() === hoje.getTime();
+      const t = typeof r.__dt === "number" ? r.__dt : null;
+      return t !== null && t === hojeTime;
     });
   }
 
   if(tipo === "semana"){
     lista = lista.filter(r => {
-      let dt = normalizarData(r.DATA);
-      return dt && dt >= inicioSemana && dt <= fimSemanaVar;
+      const t = typeof r.__dt === "number" ? r.__dt : null;
+      return t !== null && t >= inicioSemanaTime && t <= fimSemanaTime;
     });
   }
 
   if(tipo === "mes"){
     lista = lista.filter(r => {
-      let dt = normalizarData(r.DATA);
-      return dt && dt.getMonth() === hoje.getMonth() && dt.getFullYear() === hoje.getFullYear();
+      const t = typeof r.__dt === "number" ? r.__dt : null;
+      return t !== null && t >= inicioMesTime && t < proximoMesTime;
     });
   }
 
@@ -849,14 +1096,7 @@ function filtrarPeriodo(tipo){
   atualizarDashboard(lista);
 }
 
-function mostrarTipos(lista){
-  let tipos = {};
-
-  lista.forEach(r => {
-    let t = (r.TIPO || "OUTROS").trim();
-    tipos[t] = (tipos[t] || 0) + 1;
-  });
-
+function mostrarTiposContagem(tipos, totalGeral){
   let entries = Object.entries(tipos).sort((a,b) => b[1] - a[1]);
 
   if(entries.length === 0){
@@ -865,7 +1105,7 @@ function mostrarTipos(lista){
     return;
   }
 
-  let total = entries.reduce((soma, item) => soma + item[1], 0);
+  let total = typeof totalGeral === "number" ? totalGeral : entries.reduce((soma, item) => soma + item[1], 0);
 
   let html = `
     <table class="tabelaTipos">
@@ -899,13 +1139,7 @@ function mostrarTipos(lista){
   document.getElementById("tiposContainer").innerHTML = html;
 }
 
-function mostrarRanking(lista){
-  let ranking = {};
-  lista.forEach(r => {
-    let a = (r.ANALISTA || "SEM ANALISTA").trim();
-    ranking[a] = (ranking[a] || 0) + 1;
-  });
-
+function mostrarRankingContagem(ranking){
   let entries = Object.entries(ranking).sort((a,b) => b[1] - a[1]);
 
   if(entries.length === 0){
