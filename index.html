@@ -527,18 +527,19 @@ input,select{
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxq49970v7GV4dNGCXfVqlsvK4FOVYDUVh0_xfgwhzJMntVqzsZX9dgm8-XlD2fvK2euw/exec";
 
-let usuarios = [];
-let funcionarios = [];
 let registros = [];
-let funcionariosPorMatricula = new Map();
 let usuarioAtual = "";
 let perfilAtual = "";
-let usuariosCarregados = false;
-let funcionariosCarregados = false;
 let registrosCarregados = false;
-let carregandoUsuarios = false;
-let carregandoFuncionarios = false;
 let carregandoRegistros = false;
+let carregandoLogin = false;
+
+const FUNC_CACHE_MAX = 300;
+let funcionarioCache = new Map(); // matricula -> { nome, cargo, pref }
+let buscarFuncionarioTimer = null;
+let buscarFuncionarioAbort = null;
+let ultimaMatriculaConsultada = "";
+let buscarFuncionarioReqId = 0;
 
 function setLoginLoading(loading, statusMsg = ""){
   const btn = document.getElementById("loginBtn");
@@ -569,44 +570,33 @@ async function fetchJson(url, timeoutMs = 45000){
   }
 }
 
-async function carregarUsuarios(){
-  if(usuariosCarregados || carregandoUsuarios) return;
-  carregandoUsuarios = true;
-  setLoginLoading(true, "Carregando usuários...");
-  try{
-    const data = await fetchJson(API + "?acao=usuarios");
-    usuarios = Array.isArray(data) ? data : [];
-    usuariosCarregados = true;
-  }catch(_e){
-    usuarios = [];
-    usuariosCarregados = false;
-    setLoginErro("Falha ao carregar usuários. Tente novamente.");
-    mostrarNotificacao("Erro ao carregar usuários", "#d93025");
-  }finally{
-    carregandoUsuarios = false;
-    setLoginLoading(false, "");
-  }
-}
+async function postJson(payload, timeoutMs = 45000){
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-async function carregarFuncionarios(){
-  if(funcionariosCarregados || carregandoFuncionarios) return;
-  carregandoFuncionarios = true;
   try{
-    const data = await fetchJson(API + "?acao=base");
-    funcionarios = Array.isArray(data) ? data : [];
-    funcionariosPorMatricula = new Map();
-    funcionarios.forEach(f => {
-      const key = String(f.MATRICULA || "").trim();
-      if(key) funcionariosPorMatricula.set(key, f);
+    const res = await fetch(API, {
+      method: "POST",
+      // Sem header JSON para evitar preflight (Apps Script costuma falhar em OPTIONS).
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+      cache: "no-store"
     });
-    funcionariosCarregados = true;
-  }catch(_e){
-    funcionarios = [];
-    funcionariosPorMatricula = new Map();
-    funcionariosCarregados = false;
-    mostrarNotificacao("Erro ao carregar base de funcionários", "#d93025");
+
+    let data = null;
+    try{
+      data = await res.json();
+    }catch(_e){
+      data = null;
+    }
+
+    if(!res.ok){
+      throw new Error("HTTP " + res.status);
+    }
+
+    return data;
   }finally{
-    carregandoFuncionarios = false;
+    clearTimeout(timer);
   }
 }
 
@@ -659,10 +649,7 @@ function restaurarSessao(){
 window.onload = async function(){
   configurarEnter();
   const temSessao = restaurarSessao();
-  if(temSessao){
-    await carregarFuncionarios(); // necessario para busca por matricula no registro
-  }else{
-    await carregarUsuarios(); // so carrega usuarios quando a tela de login esta ativa
+  if(!temSessao){
     const usuario = document.getElementById("usuario");
     if(usuario) usuario.focus();
   }
@@ -770,20 +757,7 @@ async function abrirDashboard(){
 async function login(){
   setLoginErro("");
 
-  if(!usuariosCarregados && !carregandoUsuarios){
-    await carregarUsuarios();
-  }
-
-  if(carregandoUsuarios){
-    setLoginErro("Aguarde carregar usuários antes de entrar.");
-    mostrarNotificacao("Aguarde carregar usuários", "#d93025");
-    return;
-  }
-
-  if(!usuariosCarregados){
-    setLoginErro("Não foi possível carregar usuários.");
-    return;
-  }
+  if(carregandoLogin) return;
 
   let u = document.getElementById("usuario").value.trim();
   let s = document.getElementById("senha").value.trim();
@@ -794,35 +768,40 @@ async function login(){
     return;
   }
 
-  const usuarioDigitado = u.toLowerCase();
-  let ok = usuarios.find(x => {
-    const usuario = String(x.USUARIO || "").trim().toLowerCase();
-    const senha = String(x.SENHA || "").trim();
-    return usuario === usuarioDigitado && senha === s;
-  });
+  carregandoLogin = true;
+  setLoginLoading(true, "Entrando...");
 
-  if(ok){
-    usuarioAtual = ok.NOME || ok.USUARIO;
-    perfilAtual = (ok.PERFIL || "USER").toUpperCase();
+  try{
+    const data = await postJson({ acao: "login", usuario: u, senha: s });
 
-    localStorage.setItem("usuarioLogado", usuarioAtual);
-    localStorage.setItem("perfilLogado", perfilAtual);
+    if(data && data.ok){
+      usuarioAtual = String(data.nome || data.usuario || u).trim();
+      perfilAtual = String(data.perfil || "USER").trim().toUpperCase();
 
-    document.getElementById("loginContainer").style.display = "none";
-    document.getElementById("painel").style.display = "block";
-    document.getElementById("usuarioLogado").innerText = usuarioAtual;
+      localStorage.setItem("usuarioLogado", usuarioAtual);
+      localStorage.setItem("perfilLogado", perfilAtual);
 
-    configurarPermissoes();
-    mostrarTela("registro");
+      document.getElementById("loginContainer").style.display = "none";
+      document.getElementById("painel").style.display = "block";
+      document.getElementById("usuarioLogado").innerText = usuarioAtual;
 
-    // Evita travar a tela inicial com carregamentos que so fazem sentido apos login.
-    if(!funcionariosCarregados) mostrarNotificacao("Carregando base de funcionários...");
-    await carregarFuncionarios();
-    const matricula = document.getElementById("matricula");
-    if(matricula) matricula.focus();
-  }else{
-    setLoginErro("Login ou senha inválidos.");
-    mostrarNotificacao("Login ou senha inválidos", "#d93025");
+      document.getElementById("senha").value = "";
+
+      configurarPermissoes();
+      mostrarTela("registro");
+      const matricula = document.getElementById("matricula");
+      if(matricula) matricula.focus();
+    }else{
+      const msg = (data && (data.mensagem || data.message)) ? (data.mensagem || data.message) : "Login inválido.";
+      setLoginErro(msg);
+      mostrarNotificacao(msg, "#d93025");
+    }
+  }catch(_e){
+    setLoginErro("Falha ao conectar no servidor.");
+    mostrarNotificacao("Erro ao conectar", "#d93025");
+  }finally{
+    carregandoLogin = false;
+    setLoginLoading(false, "");
   }
 }
 
@@ -832,13 +811,11 @@ function logout(){
 
   usuarioAtual = "";
   perfilAtual = "";
-  usuarios = [];
-  usuariosCarregados = false;
-  funcionarios = [];
-  funcionariosPorMatricula = new Map();
-  funcionariosCarregados = false;
   registros = [];
   registrosCarregados = false;
+  funcionarioCache = new Map();
+  ultimaMatriculaConsultada = "";
+  if(buscarFuncionarioAbort) buscarFuncionarioAbort.abort();
 
   document.getElementById("painel").style.display = "none";
   document.getElementById("loginContainer").style.display = "flex";
@@ -847,28 +824,80 @@ function logout(){
   document.getElementById("senha").value = "";
   setLoginErro("");
   document.getElementById("usuario").focus();
-
-  // Recarrega a lista de usuarios em segundo plano para acelerar o proximo login.
-  carregarUsuarios();
 }
 
-let buscarFuncionarioTimer = null;
 function buscarFuncionario(){
   // Debounce simples para evitar trabalho a cada tecla em bases grandes.
   if(buscarFuncionarioTimer) clearTimeout(buscarFuncionarioTimer);
-  buscarFuncionarioTimer = setTimeout(buscarFuncionarioAgora, 120);
+  buscarFuncionarioTimer = setTimeout(buscarFuncionarioAgora, 220);
 }
 
-function buscarFuncionarioAgora(){
-  let mat = document.getElementById("matricula").value.trim();
-  let f = funcionariosPorMatricula.get(mat);
+function cacheFuncionario(matricula, info){
+  if(funcionarioCache.has(matricula)) funcionarioCache.delete(matricula);
+  funcionarioCache.set(matricula, info);
+  while(funcionarioCache.size > FUNC_CACHE_MAX){
+    const firstKey = funcionarioCache.keys().next().value;
+    funcionarioCache.delete(firstKey);
+  }
+}
 
-  if(f){
-    document.getElementById("nome").value = f.NOME || "";
-    document.getElementById("cargo").value = f.CARGO || "";
-  }else{
-    document.getElementById("nome").value = "";
-    document.getElementById("cargo").value = "";
+function limparFuncionarioCampos(){
+  document.getElementById("nome").value = "";
+  document.getElementById("cargo").value = "";
+}
+
+async function buscarFuncionarioAgora(){
+  let mat = document.getElementById("matricula").value.trim();
+  if(!mat){
+    ultimaMatriculaConsultada = "";
+    limparFuncionarioCampos();
+    return;
+  }
+
+  // Evita bater no servidor enquanto a pessoa ainda esta digitando.
+  if(mat.length < 3){
+    limparFuncionarioCampos();
+    return;
+  }
+
+  if(mat === ultimaMatriculaConsultada) return;
+  ultimaMatriculaConsultada = mat;
+
+  const cached = funcionarioCache.get(mat);
+  if(cached){
+    document.getElementById("nome").value = cached.nome || "";
+    document.getElementById("cargo").value = cached.cargo || "";
+    return;
+  }
+
+  if(buscarFuncionarioAbort) buscarFuncionarioAbort.abort();
+  const controller = new AbortController();
+  buscarFuncionarioAbort = controller;
+  const reqId = ++buscarFuncionarioReqId;
+
+  try{
+    const url = API + "?acao=buscarFuncionario&matricula=" + encodeURIComponent(mat);
+    const res = await fetch(url, { signal: controller.signal, cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+
+    const data = await res.json();
+    if(reqId !== buscarFuncionarioReqId) return;
+
+    if(data && data.ok){
+      const info = {
+        nome: String(data.nome || ""),
+        cargo: String(data.cargo || ""),
+        pref: String(data.pref || "")
+      };
+      cacheFuncionario(mat, info);
+      document.getElementById("nome").value = info.nome;
+      document.getElementById("cargo").value = info.cargo;
+    }else{
+      // Nao notifica para evitar "spam" enquanto digita.
+      limparFuncionarioCampos();
+    }
+  }catch(e){
+    if(e && e.name === "AbortError") return;
   }
 }
 
@@ -889,30 +918,18 @@ async function registrar(){
   btn.innerText = "Registrando...";
 
   try{
-    let res = await fetch(API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        matricula,
-        nome,
-        cargo,
-        tipo,
-        descricao,
-        analista: usuarioAtual
-      })
+    const data = await postJson({
+      acao: "registrar",
+      matricula,
+      nome,
+      cargo,
+      tipo,
+      descricao,
+      analista: usuarioAtual
     });
 
-    let data = null;
-    try{
-      data = await res.json();
-    }catch(_e){
-      data = null;
-    }
-
-    if(res.ok && data && data.ok){
-      mostrarNotificacao("Atendimento registrado com sucesso");
+    if(data && data.ok){
+      mostrarNotificacao(String(data.mensagem || "Atendimento registrado com sucesso"));
       document.getElementById("matricula").value = "";
       document.getElementById("nome").value = "";
       document.getElementById("cargo").value = "";
